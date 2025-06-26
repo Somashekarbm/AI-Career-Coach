@@ -1,0 +1,57 @@
+# Java
+*.class
+*.jar
+*.war
+*.ear
+
+# Maven
+/logs/
+/target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# Gradle
+.gradle
+build/
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# IntelliJ
+*.iml
+.idea/
+out/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+
+# Environment
+.env
+.env.*
+
+# Logs
+*.log
+
+# Others
+*.swp
+*.swo
+
+# Frontend build
+frontend/build/
+frontend/dist/
+
+# H2 database
+*.h2.db
+*.mv.db
+
+# Docker
+**/.docker/
+**/docker-compose.override.yml 
