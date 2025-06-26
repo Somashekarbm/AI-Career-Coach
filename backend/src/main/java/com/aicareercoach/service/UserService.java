@@ -1,15 +1,27 @@
 package com.aicareercoach.service;
 
-import com.aicareercoach.domain.*;
-import com.aicareercoach.dto.GoalRequest;
-import com.aicareercoach.dto.TaskResponse;
-import com.aicareercoach.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.aicareercoach.domain.Goal;
+import com.aicareercoach.domain.LifeEventLog;
+import com.aicareercoach.domain.MoodLog;
+import com.aicareercoach.domain.Roadmap;
+import com.aicareercoach.domain.Task;
+import com.aicareercoach.domain.User;
+import com.aicareercoach.dto.GoalRequest;
+import com.aicareercoach.dto.TaskResponse;
+import com.aicareercoach.repository.GoalRepository;
+import com.aicareercoach.repository.LifeEventLogRepository;
+import com.aicareercoach.repository.MoodLogRepository;
+import com.aicareercoach.repository.RoadmapRepository;
+import com.aicareercoach.repository.TaskRepository;
+import com.aicareercoach.repository.UserRepository;
 
 @Service
 public class UserService {
@@ -31,6 +43,9 @@ public class UserService {
 
     @Autowired
     private LifeEventLogRepository lifeEventLogRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public User createUser(User user) {
         return userRepository.save(user);
@@ -248,5 +263,26 @@ public class UserService {
         // Simple AI logic: reschedule to next day
         task.setDueDate(LocalDateTime.now().plusDays(1));
         taskRepository.save(task);
+    }
+
+    public User registerUser(User user) {
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new RuntimeException("Email already in use");
+        }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setIsActive(true);
+        user.setEmailVerified(false);
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
+        return userRepository.save(user);
+    }
+
+    public User authenticateUser(String email, String rawPassword) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
+            throw new RuntimeException("Invalid email or password");
+        }
+        return user;
     }
 } 

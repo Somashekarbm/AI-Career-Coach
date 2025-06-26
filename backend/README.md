@@ -89,120 +89,51 @@ Once the application is running, visit:
 - `POST /api/v1/users/{userId}/mood` - Update user mood/energy
 - `POST /api/v1/users/{userId}/life-event` - Log life event
 
+### User Authentication API
+
+#### Register
+- **Endpoint:** `POST /api/v1/auth/register`
+- **Request Body:**
+  ```json
+  {
+    "email": "user@example.com",
+    "password": "yourpassword"
+  }
+  ```
+- **Response:**
+  ```json
+  {
+    "token": "dummy-token",
+    "userId": 1,
+    "email": "user@example.com",
+    "firstName": "",
+    "lastName": ""
+  }
+  ```
+
+#### Login
+- **Endpoint:** `POST /api/v1/auth/login`
+- **Request Body:**
+  ```json
+  {
+    "email": "user@example.com",
+    "password": "yourpassword"
+  }
+  ```
+- **Response:**
+  ```json
+  {
+    "token": "dummy-token",
+    "userId": 1,
+    "email": "user@example.com",
+    "firstName": "",
+    "lastName": ""
+  }
+  ```
+
+> **Note:** The `token` is a placeholder. Replace with a real JWT implementation for production.
+
 ## Sample Flow
 
 ### 1. Create Goal
-```bash
-curl -X POST http://localhost:8080/api/v1/users/1/goals \
-  -H "Content-Type: application/json" \
-  -d '{"title": "Become Full Stack Developer", "description": "Transition from tech support"}'
 ```
-
-### 2. Generate Roadmap
-```bash
-curl -X POST http://localhost:8080/api/v1/users/1/goals/1/roadmap
-```
-
-### 3. Update Mood
-```bash
-curl -X POST http://localhost:8080/api/v1/users/1/mood \
-  -H "Content-Type: application/json" \
-  -d '{"mood": "tired"}'
-```
-
-### 4. Get Next Task
-```bash
-curl http://localhost:8080/api/v1/users/1/next-task
-```
-
-### 5. Log Life Event
-```bash
-curl -X POST http://localhost:8080/api/v1/users/1/life-event \
-  -H "Content-Type: application/json" \
-  -d '{"event": "sick"}'
-```
-
-## Database Schema
-
-### Core Tables
-- `users` - User profiles and authentication
-- `goals` - Career objectives
-- `roadmaps` - Learning paths
-- `tasks` - Individual learning tasks
-- `mood_logs` - User mood/energy logs
-- `life_event_logs` - Life event logs
-- `user_skills` - User skills and proficiency
-
-## Testing
-
-Run tests with:
-```bash
-mvn test
-```
-
-## Future Enhancements
-
-### Phase 2: AI Integration
-- Replace hardcoded roadmap generation with GPT API
-- Implement dynamic task suggestions
-- Add intelligent rescheduling algorithms
-
-### Phase 3: Advanced Features
-- Collaborative groups and team chat
-- Advanced mood analysis over time
-- Priority scoring and buffer day management
-- Weekend catch-up mode
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Database Connection Error**
-   - Ensure PostgreSQL is running
-   - Check database credentials in `application.yml`
-   - Verify database `ai_career_coach` exists
-
-2. **Port Already in Use**
-   - Change port in `application.yml`:
-   ```yaml
-   server:
-     port: 8081
-   ```
-
-3. **JPA/Hibernate Errors**
-   - Check database schema matches entity definitions
-   - Ensure all required tables are created
-
-## Development
-
-### Project Structure
-```
-src/main/java/com/aicareercoach/
-├── AiCareerCoachApplication.java
-├── controller/
-│   └── UserController.java
-├── domain/
-│   ├── User.java
-│   ├── Goal.java
-│   ├── Roadmap.java
-│   ├── Task.java
-│   ├── MoodLog.java
-│   ├── LifeEventLog.java
-│   ├── UserSkill.java
-│   ├── Gender.java
-│   └── JobRole.java
-├── dto/
-│   ├── MoodRequest.java
-│   ├── LifeEventRequest.java
-│   ├── GoalRequest.java
-│   └── TaskResponse.java
-├── repository/
-│   ├── UserRepository.java
-│   ├── GoalRepository.java
-│   ├── RoadmapRepository.java
-│   ├── TaskRepository.java
-│   ├── MoodLogRepository.java
-│   └── LifeEventLogRepository.java
-└── service/
-    └── UserService.java
-``` 
