@@ -61,7 +61,7 @@ const Hero = ({ showGetStarted = false }) => {
    if (showGetStarted) {
       navigate("/register");
     } else {
-      navigate("/goal-details");  
+      navigate("/goal-set");  
     }
   };
 

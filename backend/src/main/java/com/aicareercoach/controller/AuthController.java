@@ -12,7 +12,6 @@ import com.aicareercoach.config.JwtUtil;
 import com.aicareercoach.domain.User;
 import com.aicareercoach.dto.AuthRequest;
 import com.aicareercoach.dto.AuthResponse;
-import com.aicareercoach.dto.LoginRequest;
 import com.aicareercoach.service.UserService;
 
 import jakarta.validation.Valid;
@@ -42,7 +41,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest request) {
         User user = userService.authenticateUser(request.getEmail(), request.getPassword());
         String token = jwtUtil.generateToken(user.getId(), user.getEmail());
         return ResponseEntity.ok(new AuthResponse(token, user.getId(), user.getEmail(), user.getFirstName(), user.getLastName()));
