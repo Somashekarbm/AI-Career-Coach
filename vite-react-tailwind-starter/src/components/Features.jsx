@@ -1,10 +1,21 @@
 import React from "react";
 
 const features = [
-  { title: "AI Resume Review", description: "Instant feedback to boost your resume visibility." },
-  { title: "Mock Interviews", description: "Practice with AI for real interview scenarios." },
-  { title: "Career Path Guidance", description: "Customized roadmaps based on your interests." },
+  {
+    title: "AI Resume Analyzer",
+    description: "Get tailored suggestions to enhance your resume and stand out to recruiters."
+  },
+  ,
+  {
+    title: "Personalized Career Roadmaps",
+    description: "Receive step-by-step, goal-oriented plans based on your background and interests."
+  },
+  {
+    title: "Simulated AI Interviews",
+    description: "Sharpen your interview skills with real-time, AI-driven practice sessions."
+  }
 ];
+
 
 const Features = () => {
   return (
