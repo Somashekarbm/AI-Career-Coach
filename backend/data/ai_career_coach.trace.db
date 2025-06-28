@@ -1,0 +1,31 @@
+2025-06-28 12:15:09.289824+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-224]
+2025-06-28 12:15:09.329672+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-224]
+2025-06-28 12:15:09.348898+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-224]
+2025-06-28 12:15:09.369452+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-224]
+2025-06-28 12:15:09.383241+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-224]
+2025-06-28 12:15:09.389230+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-224]
+2025-06-28 12:15:09.396236+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-224]
+2025-06-28 12:15:09.401645+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-224]
+2025-06-28 12:15:09.406649+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-224]
+2025-06-28 12:22:48.087984+05:30 jdbc[53]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-224]
+2025-06-28 12:24:01.653650+05:30 jdbc[63]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "users""goals" not found; SQL statement:
+SELECT * FROM "users""goals" [42102-224]
+2025-06-28 12:27:20.964616+05:30 jdbc[53]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-224]
+2025-06-28 12:39:06.912162+05:30 jdbc[114]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-224]
+2025-06-28 12:39:29.248612+05:30 jdbc[115]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-224]
+2025-06-28 12:39:51.731573+05:30 jdbc[115]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-224]
