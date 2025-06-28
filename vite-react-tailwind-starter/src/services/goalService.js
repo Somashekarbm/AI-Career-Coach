@@ -1,14 +1,6 @@
-import Cookies from 'js-cookie';
+import sessionService from './sessionService';
 
 const API_BASE_URL = 'http://localhost:8080/api/v1';
-
-const getAuthHeaders = () => {
-  const token = Cookies.get('token');
-  return {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`
-  };
-};
 
 export const goalService = {
   // Get all goals with optional filtering and sorting
@@ -22,16 +14,12 @@ export const goalService = {
     const url = `${API_BASE_URL}/goals${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
     
     try {
-      const response = await fetch(url, {
+      const response = await sessionService.makeAuthenticatedRequest({
         method: 'GET',
-        headers: getAuthHeaders(),
+        url: url,
       });
       
-      if (!response.ok) {
-        throw new Error('Failed to fetch goals');
-      }
-      
-      return await response.json();
+      return response.data;
     } catch (error) {
       console.error('Error fetching goals:', error);
       throw error;
@@ -41,16 +29,12 @@ export const goalService = {
   // Get a specific goal by ID
   async getGoalById(id) {
     try {
-      const response = await fetch(`${API_BASE_URL}/goals/${id}`, {
+      const response = await sessionService.makeAuthenticatedRequest({
         method: 'GET',
-        headers: getAuthHeaders(),
+        url: `${API_BASE_URL}/goals/${id}`,
       });
       
-      if (!response.ok) {
-        throw new Error('Failed to fetch goal');
-      }
-      
-      return await response.json();
+      return response.data;
     } catch (error) {
       console.error('Error fetching goal:', error);
       throw error;
@@ -60,17 +44,13 @@ export const goalService = {
   // Create a new goal
   async createGoal(goalData) {
     try {
-      const response = await fetch(`${API_BASE_URL}/goals`, {
+      const response = await sessionService.makeAuthenticatedRequest({
         method: 'POST',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(goalData),
+        url: `${API_BASE_URL}/goals`,
+        data: goalData,
       });
       
-      if (!response.ok) {
-        throw new Error('Failed to create goal');
-      }
-      
-      return await response.json();
+      return response.data;
     } catch (error) {
       console.error('Error creating goal:', error);
       throw error;
@@ -80,17 +60,13 @@ export const goalService = {
   // Update an existing goal
   async updateGoal(id, goalData) {
     try {
-      const response = await fetch(`${API_BASE_URL}/goals/${id}`, {
+      const response = await sessionService.makeAuthenticatedRequest({
         method: 'PUT',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(goalData),
+        url: `${API_BASE_URL}/goals/${id}`,
+        data: goalData,
       });
       
-      if (!response.ok) {
-        throw new Error('Failed to update goal');
-      }
-      
-      return await response.json();
+      return response.data;
     } catch (error) {
       console.error('Error updating goal:', error);
       throw error;
@@ -100,14 +76,10 @@ export const goalService = {
   // Delete a goal
   async deleteGoal(id) {
     try {
-      const response = await fetch(`${API_BASE_URL}/goals/${id}`, {
+      const response = await sessionService.makeAuthenticatedRequest({
         method: 'DELETE',
-        headers: getAuthHeaders(),
+        url: `${API_BASE_URL}/goals/${id}`,
       });
-      
-      if (!response.ok) {
-        throw new Error('Failed to delete goal');
-      }
       
       return true;
     } catch (error) {
@@ -119,16 +91,12 @@ export const goalService = {
   // Get user name
   async getUserName() {
     try {
-      const response = await fetch(`${API_BASE_URL}/goals/user/name`, {
+      const response = await sessionService.makeAuthenticatedRequest({
         method: 'GET',
-        headers: getAuthHeaders(),
+        url: `${API_BASE_URL}/goals/user/name`,
       });
       
-      if (!response.ok) {
-        throw new Error('Failed to fetch user name');
-      }
-      
-      return await response.text();
+      return response.data;
     } catch (error) {
       console.error('Error fetching user name:', error);
       throw error;

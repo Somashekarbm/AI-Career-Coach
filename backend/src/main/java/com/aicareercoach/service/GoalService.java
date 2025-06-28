@@ -73,6 +73,27 @@ public class GoalService {
                 .collect(Collectors.toList());
     }
 
+    public List<GoalResponse> getGoalsByCategoryAndSort(Long userId, String category, String sortBy) {
+        List<Goal> goals;
+        switch (sortBy) {
+            case "deadline":
+                goals = goalRepository.findByUserIdAndCategoryOrderByDeadlineAsc(userId, category);
+                break;
+            case "dailyHours":
+                goals = goalRepository.findByUserIdAndCategoryOrderByDailyHoursDesc(userId, category);
+                break;
+            case "progress":
+                goals = goalRepository.findByUserIdAndCategoryOrderByProgressDesc(userId, category);
+                break;
+            default: // createdAt
+                goals = goalRepository.findByUserIdAndCategoryOrderByCreatedAtDesc(userId, category);
+                break;
+        }
+        return goals.stream()
+                .map(this::convertToGoalResponse)
+                .collect(Collectors.toList());
+    }
+
     public GoalResponse createGoal(Long userId, GoalRequest goalRequest) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));

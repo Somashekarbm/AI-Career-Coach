@@ -1,25 +1,24 @@
-import React, { useState } from "react"; // ✅ FIXED
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
 import { Moon, Sun } from "lucide-react";
 import ButtonSpinner from "./ButtonSpinner";
 import { useTheme } from "../context/ThemeContext";
 import toast from "react-hot-toast";
+import sessionService from "../services/sessionService";
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const navigate = useNavigate();
   const { isDarkMode, toggleTheme } = useTheme();
-  const isLoggedIn = !!Cookies.get("token");
+  const isLoggedIn = sessionService.isLoggedIn();
 
   // Handle Logout
   const handleLogout = () => {
     setLoggingOut(true);
     setTimeout(() => {
-      Cookies.remove("token");
+      sessionService.logout();
       toast.success("Logged out successfully!");
-      navigate("/home");
     }, 1500);
   };
 
@@ -55,7 +54,7 @@ const Header = () => {
             <button
               onClick={handleLogout}
               disabled={loggingOut}
-              className="bg-indigo-600 px-4 py-2 rounded text-white hover:bg-indigo-700 transition flex items-center gap-2"
+              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition flex items-center gap-2"
             >
               {loggingOut ? (
                 <>
@@ -67,58 +66,88 @@ const Header = () => {
               )}
             </button>
           ) : (
-            <button
-              onClick={() => navigate("/login")}
-              className="bg-indigo-600 px-4 py-2 rounded text-white hover:bg-indigo-700 transition"
-            >
-              Login
-            </button>
+            <div className="flex gap-4">
+              <button
+                onClick={() => navigate("/login")}
+                className="hover:opacity-70 transition"
+              >
+                Login
+              </button>
+              <button
+                onClick={() => navigate("/register")}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition"
+              >
+                Get Started
+              </button>
+            </div>
           )}
         </nav>
-        
 
-        {/* Mobile Menu Toggle */}
-        <div className="lg:hidden">
-          <button
-            className="text-gray-900 dark:text-white"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        {/* Mobile Menu Button */}
+        <button
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="lg:hidden text-gray-800 dark:text-white"
+        >
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
           >
             {isMobileMenuOpen ? (
-              <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             ) : (
-              <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
             )}
-          </button>
-        </div>
+          </svg>
+        </button>
       </div>
-            
-      {/* Mobile Nav */}
-      {isMobileMenuOpen && (
-        <div className="lg:hidden bg-white dark:bg-black px-6 pb-6 space-y-4 animate-fade-in-down">
-          <a href="#features" className="block text-gray-800 dark:text-white">Features</a>
-          <a href="#about" className="block text-gray-800 dark:text-white">About</a>
-          <a href="#contact" className="block text-gray-800 dark:text-white">Contact</a>
-          <button 
-            onClick={() => navigate("/goal-set")} 
-            className="block text-gray-800 dark:text-white text-left w-full"
-          >
-            Goals
-          </button>
 
-          <div className="flex justify-between items-center mt-4">
-            <button onClick={toggleTheme} className="text-gray-900 dark:text-white text-xl">
-              {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <div className="lg:hidden bg-white dark:bg-black border-t border-gray-200 dark:border-gray-700">
+          <div className="px-4 py-2 space-y-2">
+            <a href="#features" className="block py-2 text-gray-800 dark:text-white hover:opacity-70">
+              Features
+            </a>
+            <a href="#about" className="block py-2 text-gray-800 dark:text-white hover:opacity-70">
+              About
+            </a>
+            <a href="#contact" className="block py-2 text-gray-800 dark:text-white hover:opacity-70">
+              Contact
+            </a>
+            
+            {isLoggedIn && (
+              <button 
+                onClick={() => navigate("/goal-set")} 
+                className="block w-full text-left py-2 text-gray-800 dark:text-white hover:opacity-70"
+              >
+                Goals
+              </button>
+            )}
+
+            <button
+              onClick={toggleTheme}
+              className="block w-full text-left py-2 text-gray-800 dark:text-white hover:opacity-70"
+            >
+              {isDarkMode ? "Light Mode" : "Dark Mode"}
             </button>
 
             {isLoggedIn ? (
               <button
                 onClick={handleLogout}
                 disabled={loggingOut}
-                className="bg-indigo-600 px-4 py-2 rounded text-white hover:bg-indigo-700 transition flex items-center gap-2"
+                className="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition flex items-center justify-center gap-2"
               >
                 {loggingOut ? (
                   <>
@@ -130,17 +159,24 @@ const Header = () => {
                 )}
               </button>
             ) : (
-              <button
-                onClick={() => navigate("/login")}
-                className="bg-indigo-600 px-4 py-2 rounded text-white hover:bg-indigo-700 transition"
-              >
-                Login
-              </button>
+              <div className="space-y-2">
+                <button
+                  onClick={() => navigate("/login")}
+                  className="w-full text-left py-2 text-gray-800 dark:text-white hover:opacity-70"
+                >
+                  Login
+                </button>
+                <button
+                  onClick={() => navigate("/register")}
+                  className="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition"
+                >
+                  Get Started
+                </button>
+              </div>
             )}
           </div>
         </div>
       )}
-      
     </header>
   );
 };

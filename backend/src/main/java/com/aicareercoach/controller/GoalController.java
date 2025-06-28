@@ -50,14 +50,15 @@ public class GoalController {
         if (search != null && !search.trim().isEmpty()) {
             goals = goalService.searchGoals(userId, search);
         } else if (category != null && !"all".equals(category)) {
-            goals = goalService.getGoalsByCategory(userId, category);
+            // Use combined method for category filtering with sorting
+            goals = goalService.getGoalsByCategoryAndSort(userId, category, sortBy);
         } else {
-            goals = goalService.getAllGoalsByUserId(userId);
-        }
-        
-        // Apply sorting
-        if (!"createdAt".equals(sortBy)) {
-            goals = goalService.getGoalsSorted(userId, sortBy);
+            // For all goals, apply sorting
+            if (!"createdAt".equals(sortBy)) {
+                goals = goalService.getGoalsSorted(userId, sortBy);
+            } else {
+                goals = goalService.getAllGoalsByUserId(userId);
+            }
         }
         
         return ResponseEntity.ok(goals);

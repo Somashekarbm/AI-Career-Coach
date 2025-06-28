@@ -13,10 +13,16 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtUtil {
     private final String jwtSecret;
-    private final long jwtExpirationMs = 86400000; // 1 day
+    private final long jwtExpirationMs;
+    private final long refreshExpirationMs;
 
-    public JwtUtil(@Value("${jwt.secret:mysecretkey1234567890}") String jwtSecret) {
+    public JwtUtil(
+            @Value("${jwt.secret:mysecretkey1234567890}") String jwtSecret,
+            @Value("${jwt.expiration:3600000}") long jwtExpirationMs,
+            @Value("${jwt.refresh-expiration:604800000}") long refreshExpirationMs) {
         this.jwtSecret = jwtSecret;
+        this.jwtExpirationMs = jwtExpirationMs;
+        this.refreshExpirationMs = refreshExpirationMs;
     }
 
     public String generateToken(Long userId, String email) {
@@ -25,6 +31,20 @@ public class JwtUtil {
         return Jwts.builder()
                 .setSubject(email)
                 .claim("userId", userId)
+                .claim("type", "access")
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String generateRefreshToken(Long userId, String email) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + refreshExpirationMs);
+        return Jwts.builder()
+                .setSubject(email)
+                .claim("userId", userId)
+                .claim("type", "refresh")
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
@@ -40,6 +60,33 @@ public class JwtUtil {
         }
     }
 
+    public boolean isTokenExpired(String token) {
+        try {
+            Date expiration = Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getExpiration();
+            return expiration.before(new Date());
+        } catch (Exception e) {
+            return true;
+        }
+    }
+
+    public String getTokenType(String token) {
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .get("type", String.class);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public String getEmailFromToken(String token) {
         return Jwts.parserBuilder().setSigningKey(getSigningKey()).build()
                 .parseClaimsJws(token).getBody().getSubject();
@@ -49,6 +96,11 @@ public class JwtUtil {
         Object userId = Jwts.parserBuilder().setSigningKey(getSigningKey()).build()
                 .parseClaimsJws(token).getBody().get("userId");
         return userId instanceof Integer ? ((Integer) userId).longValue() : (Long) userId;
+    }
+
+    public Date getTokenExpiration(String token) {
+        return Jwts.parserBuilder().setSigningKey(getSigningKey()).build()
+                .parseClaimsJws(token).getBody().getExpiration();
     }
 
     private Key getSigningKey() {

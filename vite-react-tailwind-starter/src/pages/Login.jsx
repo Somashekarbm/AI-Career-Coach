@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
 import ButtonSpinner from "../components/ButtonSpinner";
+import sessionService from "../services/sessionService";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -12,79 +11,85 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = Cookies.get("token");
-    if (token) navigate("/");
-  }, []);
+    if (sessionService.isLoggedIn()) {
+      navigate("/");
+    }
+  }, [navigate]);
 
-const handleLogin = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  try {
-    const res = await axios.post("http://localhost:8080/api/v1/auth/login", {
-      email,
-      password,
-    });
-
-    Cookies.set("token", res.data.token, { expires: 1 });
-    toast.success("Logged in successfully!");
-    
-    // Small delay to ensure toast message is visible before navigation
-    setTimeout(() => {
-      navigate("/landing");
-    }, 1000);
-  } catch (error) {
-    console.error(error);
-    toast.error("Login failed. Please check your credentials.");
-  } finally {
-    setLoading(false);
-  }
-};
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await sessionService.login(email, password);
+      toast.success("Logged in successfully!");
+      
+      // Small delay to ensure toast message is visible before navigation
+      setTimeout(() => {
+        navigate("/landing");
+      }, 1000);
+    } catch (error) {
+      console.error(error);
+      toast.error("Login failed. Please check your credentials.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-black">
+    <div className="min-h-screen flex justify-center items-center bg-gray-100 dark:bg-gray-900">
       <form
         onSubmit={handleLogin}
-        className="bg-[#121212] p-8 rounded-xl shadow-md min-h-96 max-w-1/2"
+        className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-sm border border-gray-200 dark:border-gray-700"
       >
-        <h2 className="text-2xl font-bold mb-6 text-center text-white">Login</h2>
-        <input
-          type="email"
-          placeholder="Email"
-          className="w-full p-3 mb-4 bg-black border border-white text-white"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full p-3 mb-6 bg-black border border-white text-white"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button
-          type="submit"
-          className="w-1/2 bg-black border border-white text-white p-3 rounded hover:bg-white hover:border-black hover:text-black transition flex justify-center items-center gap-2"
-          disabled={loading}
-        >
-          {loading ? (
-            <>
-              <ButtonSpinner />
-              <span>Logging in...</span>
-            </>
-          ) : (
-            "Login"
-          )}
-        </button>
-        <p className="text-sm mt-4 text-center">
+        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-white">
+          Login
+        </h2>
+        <div className="mb-4">
+          <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">
+            Email
+          </label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="shadow appearance-none border border-gray-300 dark:border-gray-600 rounded w-full py-2 px-3 text-gray-700 dark:text-white bg-white dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 dark:focus:border-blue-400"
+            required
+          />
+        </div>
+        <div className="mb-6">
+          <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">
+            Password
+          </label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="shadow appearance-none border border-gray-300 dark:border-gray-600 rounded w-full py-2 px-3 text-gray-700 dark:text-white bg-white dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 dark:focus:border-blue-400"
+            required
+          />
+        </div>
+        <div className="flex items-center justify-between">
+          <button
+            type="submit"
+            disabled={loading}
+            className="bg-blue-500 hover:bg-blue-700 disabled:bg-blue-300 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full transition duration-200"
+          >
+            {loading ? <ButtonSpinner /> : "Login"}
+          </button>
+        </div>
+        <div className="text-center mt-4">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             Don't have an account?{" "}
-            <a href="/register" className="text-indigo-600 hover:underline">
-            Register
-            </a>
-        </p>
+            <button
+              type="button"
+              onClick={() => navigate("/register")}
+              className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition duration-200"
+            >
+              Register here
+            </button>
+          </p>
+        </div>
       </form>
-
     </div>
   );
 };

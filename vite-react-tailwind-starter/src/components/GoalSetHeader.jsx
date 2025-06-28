@@ -1,23 +1,21 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
 import { Moon, Sun, Bell, Menu, Users, CheckSquare } from "lucide-react";
 import ButtonSpinner from "./ButtonSpinner";
 import { useTheme } from "../context/ThemeContext";
+import sessionService from "../services/sessionService";
 
 const GoalSetHeader = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const navigate = useNavigate();
   const { isDarkMode, toggleTheme } = useTheme();
-  const isLoggedIn = !!Cookies.get("token");
 
   // Handle Logout
   const handleLogout = () => {
     setLoggingOut(true);
     setTimeout(() => {
-      Cookies.remove("token");
-      window.location.href = "/home#";
+      sessionService.logout();
     }, 1000);
   };
 
@@ -47,29 +45,78 @@ const GoalSetHeader = () => {
           </div>
 
           {/* Notifications */}
-          <button className="hover:opacity-70 transition relative">
+          <button className="hover:opacity-70 transition">
             <Bell size={20} />
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-              3
-            </span>
           </button>
 
+          {/* Theme Toggle */}
           <button onClick={toggleTheme} className="hover:opacity-70 transition">
             {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
           </button>
 
-          <button 
-            onClick={() => navigate("/landing")} 
-            className="hover:opacity-70 transition"
+          {/* Logout */}
+          <button
+            onClick={handleLogout}
+            disabled={loggingOut}
+            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition flex items-center gap-2"
           >
-            Dashboard
+            {loggingOut ? (
+              <>
+                <ButtonSpinner />
+                <span>Logging out...</span>
+              </>
+            ) : (
+              "Logout"
+            )}
           </button>
+        </nav>
 
-          {isLoggedIn ? (
+        {/* Mobile Menu Button */}
+        <button
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="lg:hidden text-gray-800 dark:text-white"
+        >
+          <Menu size={24} />
+        </button>
+      </div>
+
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <div className="lg:hidden bg-white dark:bg-black border-t border-gray-200 dark:border-gray-700">
+          <div className="px-4 py-2 space-y-2">
+            <div className="flex items-center gap-2 py-2 text-gray-800 dark:text-white">
+              <Users size={20} />
+              <span>Teams</span>
+            </div>
+            
+            <div className="flex items-center gap-2 bg-indigo-100 dark:bg-indigo-900 px-3 py-1 rounded-full">
+              <CheckSquare size={16} />
+              <span className="text-sm font-medium text-indigo-700 dark:text-indigo-300">
+                5 Tasks Today
+              </span>
+            </div>
+
+            <button className="block w-full text-left py-2 text-gray-800 dark:text-white hover:opacity-70">
+              <div className="flex items-center gap-2">
+                <Bell size={20} />
+                <span>Notifications</span>
+              </div>
+            </button>
+
+            <button
+              onClick={toggleTheme}
+              className="block w-full text-left py-2 text-gray-800 dark:text-white hover:opacity-70"
+            >
+              <div className="flex items-center gap-2">
+                {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+                <span>{isDarkMode ? "Light Mode" : "Dark Mode"}</span>
+              </div>
+            </button>
+
             <button
               onClick={handleLogout}
               disabled={loggingOut}
-              className="bg-indigo-600 px-4 py-2 rounded text-white hover:bg-indigo-700 transition flex items-center gap-2"
+              className="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition flex items-center justify-center gap-2"
             >
               {loggingOut ? (
                 <>
@@ -80,82 +127,6 @@ const GoalSetHeader = () => {
                 "Logout"
               )}
             </button>
-          ) : (
-            <button
-              onClick={() => navigate("/login")}
-              className="bg-indigo-600 px-4 py-2 rounded text-white hover:bg-indigo-700 transition"
-            >
-              Login
-            </button>
-          )}
-        </nav>
-
-        {/* Mobile Menu Toggle */}
-        <div className="lg:hidden">
-          <button
-            className="text-gray-900 dark:text-white"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            <Menu size={24} />
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Nav */}
-      {isMobileMenuOpen && (
-        <div className="lg:hidden bg-white dark:bg-black px-6 pb-6 space-y-4 animate-fade-in-down">
-          <div className="flex items-center gap-2 text-gray-800 dark:text-white">
-            <Users size={20} />
-            <span>Teams</span>
-          </div>
-
-          <div className="flex items-center gap-2 bg-indigo-100 dark:bg-indigo-900 px-3 py-2 rounded-full">
-            <CheckSquare size={16} />
-            <span className="text-sm font-medium text-indigo-700 dark:text-indigo-300">
-              5 Tasks Today
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2 text-gray-800 dark:text-white">
-            <Bell size={20} />
-            <span>Notifications (3)</span>
-          </div>
-
-          <div className="flex justify-between items-center mt-4">
-            <button onClick={toggleTheme} className="text-gray-900 dark:text-white text-xl">
-              {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
-
-            <button 
-              onClick={() => navigate("/landing")} 
-              className="hover:opacity-70 transition"
-            >
-              Dashboard
-            </button>
-
-            {isLoggedIn ? (
-              <button
-                onClick={handleLogout}
-                disabled={loggingOut}
-                className="bg-indigo-600 px-4 py-2 rounded text-white hover:bg-indigo-700 transition flex items-center gap-2"
-              >
-                {loggingOut ? (
-                  <>
-                    <ButtonSpinner />
-                    <span>Logging out...</span>
-                  </>
-                ) : (
-                  "Logout"
-                )}
-              </button>
-            ) : (
-              <button
-                onClick={() => navigate("/login")}
-                className="bg-indigo-600 px-4 py-2 rounded text-white hover:bg-indigo-700 transition"
-              >
-                Login
-              </button>
-            )}
           </div>
         </div>
       )}

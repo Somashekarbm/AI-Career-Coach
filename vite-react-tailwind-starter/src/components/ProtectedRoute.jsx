@@ -1,11 +1,11 @@
 // src/components/ProtectedRoute.jsx
 import React from "react";
 import { Navigate } from "react-router-dom";
-import Cookies from "js-cookie";
+import sessionService from "../services/sessionService";
 
 const ProtectedRoute = ({ children }) => {
-  const token = Cookies.get("token");
-  return token ? children : <Navigate to="/home" replace />;
+  const isLoggedIn = sessionService.isLoggedIn();
+  return isLoggedIn ? children : <Navigate to="/home" replace />;
 };
 
 export default ProtectedRoute;
