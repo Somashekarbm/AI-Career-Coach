@@ -5,7 +5,7 @@ const features = [
     title: "AI Resume Analyzer",
     description: "Get tailored suggestions to enhance your resume and stand out to recruiters."
   },
-  ,
+
   {
     title: "Personalized Career Roadmaps",
     description: "Receive step-by-step, goal-oriented plans based on your background and interests."
@@ -13,7 +13,7 @@ const features = [
   {
     title: "Simulated AI Interviews",
     description: "Sharpen your interview skills with real-time, AI-driven practice sessions."
-  }
+
 ];
 
 
