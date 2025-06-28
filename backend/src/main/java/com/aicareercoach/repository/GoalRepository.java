@@ -30,13 +30,5 @@ public interface GoalRepository extends JpaRepository<Goal, Long> {
     
     @Query("SELECT g FROM Goal g WHERE g.user.id = :userId ORDER BY g.progressPercentage DESC")
     List<Goal> findByUserIdOrderByProgressDesc(@Param("userId") Long userId);
-    
-    @Query("SELECT g FROM Goal g WHERE g.user.id = :userId AND g.category = :category ORDER BY g.deadline ASC")
-    List<Goal> findByUserIdAndCategoryOrderByDeadlineAsc(@Param("userId") Long userId, @Param("category") String category);
-    
-    @Query("SELECT g FROM Goal g WHERE g.user.id = :userId AND g.category = :category ORDER BY g.dailyHours DESC")
-    List<Goal> findByUserIdAndCategoryOrderByDailyHoursDesc(@Param("userId") Long userId, @Param("category") String category);
-    
-    @Query("SELECT g FROM Goal g WHERE g.user.id = :userId AND g.category = :category ORDER BY g.progressPercentage DESC")
-    List<Goal> findByUserIdAndCategoryOrderByProgressDesc(@Param("userId") Long userId, @Param("category") String category);
+
 } 

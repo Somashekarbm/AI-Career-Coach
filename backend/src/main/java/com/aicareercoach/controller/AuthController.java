@@ -51,55 +51,8 @@ public class AuthController {
             }
             
             String token = jwtUtil.generateToken(user.getId(), user.getEmail());
-            String refreshToken = jwtUtil.generateRefreshToken(user.getId(), user.getEmail());
-            return ResponseEntity.ok(new AuthResponse(token, refreshToken, user.getId(), user.getEmail(), user.getFirstName(), user.getLastName()));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                 .body("Login failed: " + e.getMessage());
         }
     }
-
-    @PostMapping("/refresh")
-    public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
-        try {
-            String refreshToken = request.getRefreshToken();
-            
-            // Validate refresh token
-            if (!jwtUtil.validateToken(refreshToken) || 
-                !"refresh".equals(jwtUtil.getTokenType(refreshToken)) ||
-                jwtUtil.isTokenExpired(refreshToken)) {
-                return ResponseEntity.badRequest().body("Invalid or expired refresh token");
-            }
-            
-            // Extract user info from refresh token
-            Long userId = jwtUtil.getUserIdFromToken(refreshToken);
-            String email = jwtUtil.getEmailFromToken(refreshToken);
-            
-            // Generate new access token
-            String newToken = jwtUtil.generateToken(userId, email);
-            String newRefreshToken = jwtUtil.generateRefreshToken(userId, email);
-            
-            return ResponseEntity.ok(new AuthResponse(newToken, newRefreshToken, userId, email, "", ""));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Token refresh failed: " + e.getMessage());
-        }
-    }
-
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout() {
-        // In a stateless JWT system, logout is handled client-side
-        // But we can add token blacklisting here if needed
-        return ResponseEntity.ok().body("Logged out successfully");
-    }
-
-    // Debug endpoint to list all users (for development only)
-    @GetMapping("/debug/users")
-    public ResponseEntity<?> debugUsers() {
-        try {
-            return ResponseEntity.ok(userService.getAllUsersDebug());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                .body("Error: " + e.getMessage());
-        }
-    }
-} 

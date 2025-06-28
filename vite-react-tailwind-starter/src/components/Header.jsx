@@ -1,24 +1,23 @@
-import React, { useState } from "react";
+
 import { useNavigate } from "react-router-dom";
 import { Moon, Sun } from "lucide-react";
 import ButtonSpinner from "./ButtonSpinner";
 import { useTheme } from "../context/ThemeContext";
 import toast from "react-hot-toast";
-import sessionService from "../services/sessionService";
+
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const navigate = useNavigate();
   const { isDarkMode, toggleTheme } = useTheme();
-  const isLoggedIn = sessionService.isLoggedIn();
+
 
   // Handle Logout
   const handleLogout = () => {
     setLoggingOut(true);
     setTimeout(() => {
-      sessionService.logout();
-      toast.success("Logged out successfully!");
+
     }, 1500);
   };
 
@@ -82,6 +81,7 @@ const Header = () => {
             </div>
           )}
         </nav>
+        
 
         {/* Mobile Menu Button */}
         <button
@@ -113,28 +113,6 @@ const Header = () => {
         </button>
       </div>
 
-      {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="lg:hidden bg-white dark:bg-black border-t border-gray-200 dark:border-gray-700">
-          <div className="px-4 py-2 space-y-2">
-            <a href="#features" className="block py-2 text-gray-800 dark:text-white hover:opacity-70">
-              Features
-            </a>
-            <a href="#about" className="block py-2 text-gray-800 dark:text-white hover:opacity-70">
-              About
-            </a>
-            <a href="#contact" className="block py-2 text-gray-800 dark:text-white hover:opacity-70">
-              Contact
-            </a>
-            
-            {isLoggedIn && (
-              <button 
-                onClick={() => navigate("/goal-set")} 
-                className="block w-full text-left py-2 text-gray-800 dark:text-white hover:opacity-70"
-              >
-                Goals
-              </button>
-            )}
 
             <button
               onClick={toggleTheme}
@@ -177,6 +155,7 @@ const Header = () => {
           </div>
         </div>
       )}
+      
     </header>
   );
 };

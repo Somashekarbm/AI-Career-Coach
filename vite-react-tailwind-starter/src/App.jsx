@@ -6,12 +6,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Goal from "./pages/Goal";
 import GoalSetPage from "./pages/GoalSetPage";
-import { Toaster } from "react-hot-toast";
-import ProtectedRoute from "./components/ProtectedRoute";
-import SessionTimeoutWarning from "./components/SessionTimeoutWarning";
-import { ThemeProvider } from "./context/ThemeContext";
-import sessionService from "./services/sessionService";
-import "./index.css";
+
 
 function App() {
   const isLoggedIn = sessionService.isLoggedIn();
@@ -20,20 +15,13 @@ function App() {
     <ThemeProvider>
       <Router>
         <Toaster position="top-center" reverseOrder={false} />
-        <SessionTimeoutWarning />
-        <Routes>
-          {/* Public Home Page */}
-          <Route path="/home" element={!isLoggedIn ? <Home /> : <Navigate to="/landing" replace />} />
 
-          {/* Auth Pages */}
-          <Route path="/login" element={!isLoggedIn ? <Login /> : <Navigate to="/landing" replace />} />
-          <Route path="/register" element={!isLoggedIn ? <Register /> : <Navigate to="/landing" replace />} />
 
           {/* Protected Landing Page (only if logged in) */}
           <Route
             path="/"
             element={
-              isLoggedIn ? (
+
                 <Navigate to="/landing" replace />
               ) : (
                 <Navigate to="/home" replace />

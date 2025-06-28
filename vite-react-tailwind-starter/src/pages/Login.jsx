@@ -16,24 +16,7 @@ const Login = () => {
     }
   }, [navigate]);
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      await sessionService.login(email, password);
-      toast.success("Logged in successfully!");
-      
-      // Small delay to ensure toast message is visible before navigation
-      setTimeout(() => {
-        navigate("/landing");
-      }, 1000);
-    } catch (error) {
-      console.error(error);
-      toast.error("Login failed. Please check your credentials.");
-    } finally {
-      setLoading(false);
-    }
-  };
+
 
   return (
     <div className="min-h-screen flex justify-center items-center bg-gray-100 dark:bg-gray-900">
