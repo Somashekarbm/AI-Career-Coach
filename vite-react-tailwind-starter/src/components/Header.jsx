@@ -4,6 +4,7 @@ import Cookies from "js-cookie";
 import { Moon, Sun } from "lucide-react";
 import ButtonSpinner from "./ButtonSpinner";
 import { useTheme } from "../context/ThemeContext";
+import toast from "react-hot-toast";
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -14,12 +15,13 @@ const Header = () => {
 
   // Handle Logout
   const handleLogout = () => {
-  setLoggingOut(true);
-  setTimeout(() => {
-    Cookies.remove("token");
-    window.location.href = "/home#"; // Force reload to show Home page after logout
-  }, 1000);
-};
+    setLoggingOut(true);
+    setTimeout(() => {
+      Cookies.remove("token");
+      toast.success("Logged out successfully!");
+      navigate("/home");
+    }, 1500);
+  };
 
   return (
     <header className="bg-white dark:bg-black shadow-md dark:shadow-white  w-full z-50">
@@ -35,12 +37,15 @@ const Header = () => {
           <a href="#features" className="hover:opacity-70 transition">Features</a>
           <a href="#about" className="hover:opacity-70 transition">About</a>
           <a href="#contact" className="hover:opacity-70 transition">Contact</a>
-          {/* <button 
-            onClick={() => navigate("/goal-set")} 
-            className="hover:opacity-70 transition"
-          >
-            Goals
-          </button> */}
+          
+          {isLoggedIn && (
+            <button 
+              onClick={() => navigate("/goal-set")} 
+              className="hover:opacity-70 transition"
+            >
+              Goals
+            </button>
+          )}
 
           <button onClick={toggleTheme} className="hover:opacity-70 transition">
             {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}

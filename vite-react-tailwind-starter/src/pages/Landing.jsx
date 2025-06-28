@@ -9,7 +9,7 @@ const Landing = () => {
     <div className="bg-[#121212] text-white">
       <Header showLogout={true} />
       <main>
-        <Hero showCreateGoal={true} />
+        <Hero />
         <Features />
       </main>
       <Footer />

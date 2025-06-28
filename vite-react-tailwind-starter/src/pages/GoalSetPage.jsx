@@ -1,20 +1,91 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Calendar, Clock, Edit, Trash2, Eye, Save, X } from "lucide-react";
+import { 
+  Plus, 
+  Calendar, 
+  Clock, 
+  Edit, 
+  Trash2, 
+  Eye, 
+  Save, 
+  X, 
+  Search, 
+  Filter,
+  Tag,
+  TrendingUp,
+  Info
+} from "lucide-react";
 import GoalSetHeader from "../components/GoalSetHeader";
 import Footer from "../components/Footer";
+import UserGreeting from "../components/UserGreeting";
+import ProgressBar from "../components/ProgressBar";
+import TaskPreview from "../components/TaskPreview";
+import DeadlineCountdown from "../components/DeadlineCountdown";
+import ConfirmationDialog from "../components/ConfirmationDialog";
+import { goalService } from "../services/goalService";
+import toast from "react-hot-toast";
 
 const GoalSetPage = () => {
   const [goals, setGoals] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingGoal, setEditingGoal] = useState(null);
+  const [deleteGoal, setDeleteGoal] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [sortBy, setSortBy] = useState("createdAt");
+  const [showTooltip, setShowTooltip] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     deadline: "",
     dailyHours: "",
+    category: "career",
+    tags: []
   });
+
   const navigate = useNavigate();
+
+  const categories = [
+    { id: "all", name: "All Goals", color: "gray" },
+    { id: "career", name: "Career", color: "green" },
+    { id: "learning", name: "Learning", color: "blue" },
+    { id: "health", name: "Health", color: "red" },
+    { id: "personal", name: "Personal", color: "purple" },
+    { id: "finance", name: "Finance", color: "yellow" }
+  ];
+
+  const sortOptions = [
+    { value: "createdAt", label: "Date Created" },
+    { value: "deadline", label: "Deadline" },
+    { value: "dailyHours", label: "Daily Hours" },
+    { value: "progress", label: "Progress" }
+  ];
+
+  // Fetch goals from backend
+  const fetchGoals = async () => {
+    try {
+      setLoading(true);
+      const params = {};
+      
+      if (searchTerm) params.search = searchTerm;
+      if (selectedCategory !== "all") params.category = selectedCategory;
+      if (sortBy !== "createdAt") params.sortBy = sortBy;
+      
+      const goalsData = await goalService.getGoals(params);
+      setGoals(goalsData);
+    } catch (error) {
+      console.error('Error fetching goals:', error);
+      toast.error('Failed to load goals');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchGoals();
+  }, [searchTerm, selectedCategory, sortBy]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -24,37 +95,55 @@ const GoalSetPage = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (editingGoal) {
-      // Update existing goal
-      setGoals(prev => prev.map(goal => 
-        goal.id === editingGoal.id 
-          ? { ...goal, ...formData, updatedAt: new Date().toISOString() }
-          : goal
-      ));
-      setEditingGoal(null);
-    } else {
-      // Create new goal
-      const newGoal = {
-        id: Date.now(),
-        ...formData,
-        createdAt: new Date().toISOString(),
-      };
-      setGoals(prev => [...prev, newGoal]);
-    }
     
-    setFormData({
-      title: "",
-      description: "",
-      deadline: "",
-      dailyHours: "",
-    });
-    setIsModalOpen(false);
+    try {
+      const goalData = {
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        dailyHours: parseFloat(formData.dailyHours),
+        deadline: new Date(formData.deadline).toISOString()
+      };
+
+      if (editingGoal) {
+        await goalService.updateGoal(editingGoal.id, goalData);
+        toast.success('Goal updated successfully!');
+      } else {
+        await goalService.createGoal(goalData);
+        toast.success('Goal created successfully!');
+      }
+      
+      setFormData({
+        title: "",
+        description: "",
+        deadline: "",
+        dailyHours: "",
+        category: "career",
+        tags: []
+      });
+      setIsModalOpen(false);
+      setEditingGoal(null);
+      
+      // Refresh goals
+      fetchGoals();
+    } catch (error) {
+      console.error('Error saving goal:', error);
+      toast.error(editingGoal ? 'Failed to update goal' : 'Failed to create goal');
+    }
   };
 
-  const handleDelete = (goalId) => {
-    setGoals(prev => prev.filter(goal => goal.id !== goalId));
+  const handleDelete = async (goalId) => {
+    try {
+      await goalService.deleteGoal(goalId);
+      toast.success('Goal deleted successfully!');
+      setGoals(prev => prev.filter(goal => goal.id !== goalId));
+      setDeleteGoal(null);
+    } catch (error) {
+      console.error('Error deleting goal:', error);
+      toast.error('Failed to delete goal');
+    }
   };
 
   const handleUpdate = (goal) => {
@@ -62,8 +151,10 @@ const GoalSetPage = () => {
     setFormData({
       title: goal.title,
       description: goal.description,
-      deadline: goal.deadline,
-      dailyHours: goal.dailyHours,
+      deadline: goal.deadline ? goal.deadline.split('T')[0] : "",
+      dailyHours: goal.dailyHours?.toString() || "",
+      category: goal.category,
+      tags: goal.tags || []
     });
     setIsModalOpen(true);
   };
@@ -88,103 +179,205 @@ const GoalSetPage = () => {
       description: "",
       deadline: "",
       dailyHours: "",
+      category: "career",
+      tags: []
     });
   };
 
+  const getCategoryColor = (category) => {
+    const categoryObj = categories.find(cat => cat.id === category);
+    return categoryObj ? `tag-${categoryObj.color}` : 'tag-gray';
+  };
+
   return (
-    <div className="bg-[#ffffff] dark:bg-[#121212] text-white min-h-screen flex flex-col">
+    <div className="bg-[#ffffff] dark:bg-[#121212] text-gray-900 dark:text-white min-h-screen flex flex-col">
       <GoalSetHeader />
       
       <main className="flex-1 max-w-7xl mx-auto px-4 py-8 w-full">
+        {/* User Greeting */}
+        <UserGreeting />
+
         {/* Page Header */}
-        <div className="flex justify-between items-center mb-8">
-        <h1 className="text-4xl font-extrabold text-black dark:text-white animate-fade-in-up tracking-wide text-shadow-custom">
-  <span className="text-6xl text-indigo-600 dark:text-indigo-600 ">G</span>
-  <span className="text-black dark:text-white">oal </span>
-  <span className="text-6xl text-indigo-600 dark:text-indigo-600 ">S</span>
-  <span className="text-black dark:text-white">etting</span>
-</h1>
-
-
-
+        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-8 gap-4">
+          <h1 className="text-4xl font-extrabold text-black dark:text-white animate-fade-in-up tracking-wide text-shadow-custom">
+            <span className="text-6xl text-indigo-600 dark:text-indigo-600">G</span>
+            <span className="text-black dark:text-white">oal </span>
+            <span className="text-6xl text-indigo-600 dark:text-indigo-600">S</span>
+            <span className="text-black dark:text-white">etting</span>
+          </h1>
 
           <button
             onClick={() => setIsModalOpen(true)}
-            className="btn-hover bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 shadow-lg"
+            className="btn-hover bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 shadow-lg self-start lg:self-auto"
           >
             <Plus size={20} />
             Create New Goal
           </button>
         </div>
 
-        {/* Goals Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-8">
-          {goals.map((goal, index) => (
-            <div
-              key={goal.id}
-              className="goal-card bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 animate-fade-in-up"
-              style={{
-                animationDelay: `${index * 150}ms`,
-                animationFillMode: 'both'
-              }}
-            >
-              <div className="mb-4">
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                  {goal.title}
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
-                  {goal.description}
-                </p>
-              </div>
+        {/* Search and Filters */}
+        <div className="mb-8 space-y-4">
+          {/* Search Bar */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+            <input
+              type="text"
+              placeholder="Search goals..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="search-bar pl-10"
+            />
+          </div>
 
-              <div className="space-y-3 mb-6">
-                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                  <Calendar size={16} />
-                  <span className="text-sm">Deadline: {formatDate(goal.deadline)}</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                  <Clock size={16} />
-                  <span className="text-sm">{goal.dailyHours} hours/day</span>
-                </div>
-              </div>
-
-              <div className="flex gap-2">
+          {/* Filters and Sort */}
+          <div className="flex flex-wrap gap-3 items-center">
+            {/* Category Filters */}
+            <div className="flex flex-wrap gap-2">
+              {categories.map((category) => (
                 <button
-                  onClick={() => handleViewTasks(goal.id)}
-                  className="btn-hover flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm flex items-center justify-center gap-1"
+                  key={category.id}
+                  onClick={() => setSelectedCategory(category.id)}
+                  className={`filter-btn ${
+                    selectedCategory === category.id ? 'filter-btn-active' : 'filter-btn-inactive'
+                  }`}
                 >
-                  <Eye size={16} />
-                  View Tasks
+                  {category.name}
                 </button>
-                <button
-                  onClick={() => handleUpdate(goal)}
-                  className="btn-hover bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-2 rounded-lg"
-                >
-                  <Edit size={16} />
-                </button>
-                <button
-                  onClick={() => handleDelete(goal.id)}
-                  className="btn-hover bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
+              ))}
             </div>
-          ))}
+
+            {/* Sort Dropdown */}
+            <div className="flex items-center gap-2 ml-auto">
+              <Filter size={16} className="text-gray-500" />
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="search-bar w-auto"
+              >
+                {sortOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    Sort by: {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
         </div>
 
+        {/* Loading State */}
+        {loading && (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pb-8">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
+                <div className="animate-pulse space-y-4">
+                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                  <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                  <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+                  <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Goals Grid */}
+        {!loading && (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pb-8">
+            {goals.map((goal, index) => (
+              <div
+                key={goal.id}
+                className="goal-card bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 animate-fade-in-up shadow-soft"
+                style={{
+                  animationDelay: `${index * 150}ms`,
+                  animationFillMode: 'both'
+                }}
+              >
+                {/* Goal Header */}
+                <div className="mb-4">
+                  <div className="flex items-start justify-between mb-2">
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex-1">
+                      {goal.title}
+                    </h3>
+                    <span className={`tag ${getCategoryColor(goal.category)} ml-2`}>
+                      {categories.find(cat => cat.id === goal.category)?.name}
+                    </span>
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
+                    {goal.description}
+                  </p>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="mb-4">
+                  <ProgressBar progress={goal.completedTasks} total={goal.totalTasks} />
+                </div>
+
+                {/* Goal Details */}
+                <div className="space-y-3 mb-4">
+                  <div className="flex items-center justify-between">
+                    <DeadlineCountdown deadline={goal.deadline} />
+                    <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                      <Clock size={16} />
+                      <span className="text-sm">{goal.dailyHours} hours/day</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Created Date */}
+                <div className="mb-4">
+                  <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                    <span>Created: {formatDate(goal.createdAt)}</span>
+                    <span className="text-gray-400 dark:text-gray-500">•</span>
+                    <span className="capitalize">{goal.status}</span>
+                  </div>
+                </div>
+
+                {/* Task Preview */}
+                <TaskPreview tasks={goal.tasks} maxTasks={3} />
+
+                {/* Action Buttons */}
+                <div className="flex gap-2 mt-6">
+                  <button
+                    onClick={() => handleViewTasks(goal.id)}
+                    className="btn-hover flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm flex items-center justify-center gap-1"
+                  >
+                    <Eye size={16} />
+                    View Tasks
+                  </button>
+                  <button
+                    onClick={() => handleUpdate(goal)}
+                    className="btn-hover bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-2 rounded-lg"
+                  >
+                    <Edit size={16} />
+                  </button>
+                  <button
+                    onClick={() => setDeleteGoal(goal)}
+                    className="btn-hover bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Empty State */}
-        {goals.length === 0 && (
+        {!loading && goals.length === 0 && (
           <div className="text-center py-12 flex-1 flex items-center justify-center">
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-12 max-w-md mx-auto animate-bounce-in">
               <div className="text-gray-400 mb-4">
                 <Plus size={48} className="mx-auto" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                No Goals Yet
+                {searchTerm || selectedCategory !== "all" ? "No matching goals" : "No Goals Yet"}
               </h3>
               <p className="text-gray-600 dark:text-gray-300 mb-6">
-              Start your career with a goal — let our AI plan your path and guide your daily steps!
+                {searchTerm || selectedCategory !== "all" 
+                  ? "Try adjusting your search or filters"
+                  : "Start your career with a goal — let our AI plan your path and guide your daily steps!"
+                }
               </p>
               <button
                 onClick={() => setIsModalOpen(true)}
@@ -199,8 +392,8 @@ const GoalSetPage = () => {
 
       {/* Create/Edit Goal Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full p-6 animate-scale-in">
+        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-custom flex items-center justify-center z-50 p-4 animate-fade-in">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full p-6 animate-scale-in shadow-soft">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                 {editingGoal ? "Edit Goal" : "Create New Goal"}
@@ -224,7 +417,7 @@ const GoalSetPage = () => {
                   value={formData.title}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-200"
+                  className="search-bar"
                   placeholder="Enter your goal title"
                 />
               </div>
@@ -239,12 +432,49 @@ const GoalSetPage = () => {
                   onChange={handleInputChange}
                   required
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-200"
+                  className="search-bar"
                   placeholder="Describe your goal"
                 />
               </div>
 
-              <div className="animate-slide-in-right" style={{ animationDelay: '0.3s' }}>
+              <div className="grid grid-cols-2 gap-4 animate-slide-in-right" style={{ animationDelay: '0.3s' }}>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Category
+                  </label>
+                  <select
+                    name="category"
+                    value={formData.category}
+                    onChange={handleInputChange}
+                    className="search-bar"
+                  >
+                    {categories.filter(cat => cat.id !== "all").map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Daily Hours
+                  </label>
+                  <input
+                    type="number"
+                    name="dailyHours"
+                    value={formData.dailyHours}
+                    onChange={handleInputChange}
+                    required
+                    min="0.5"
+                    max="24"
+                    step="0.5"
+                    className="search-bar"
+                    placeholder="e.g., 2"
+                  />
+                </div>
+              </div>
+
+              <div className="animate-slide-in-right" style={{ animationDelay: '0.4s' }}>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Deadline
                 </label>
@@ -254,25 +484,7 @@ const GoalSetPage = () => {
                   value={formData.deadline}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-200"
-                />
-              </div>
-
-              <div className="animate-slide-in-right" style={{ animationDelay: '0.4s' }}>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Daily Hours to Dedicate
-                </label>
-                <input
-                  type="number"
-                  name="dailyHours"
-                  value={formData.dailyHours}
-                  onChange={handleInputChange}
-                  required
-                  min="0.5"
-                  max="24"
-                  step="0.5"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-200"
-                  placeholder="e.g., 2"
+                  className="search-bar"
                 />
               </div>
 
@@ -305,6 +517,17 @@ const GoalSetPage = () => {
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={!!deleteGoal}
+        onClose={() => setDeleteGoal(null)}
+        onConfirm={() => handleDelete(deleteGoal?.id)}
+        title="Delete Goal"
+        message={`Are you sure you want to delete "${deleteGoal?.title}"? This action cannot be undone.`}
+        confirmText="Delete Goal"
+        type="danger"
+      />
 
       <Footer />
     </div>

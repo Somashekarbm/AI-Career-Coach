@@ -51,6 +51,7 @@ frontend/dist/
 # H2 database
 *.h2.db
 *.mv.db
+*.db
 
 # Docker
 **/.docker/

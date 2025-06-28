@@ -1,14 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import Cookies from 'js-cookie';
+import { goalService } from '../services/goalService';
 
 const UserGreeting = () => {
   const [userName, setUserName] = useState('');
   const [greeting, setGreeting] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get user name from localStorage or cookies (you can modify this based on your auth system)
-    const storedName = localStorage.getItem('userName') || Cookies.get('userName') || 'User';
-    setUserName(storedName);
+    const fetchUserName = async () => {
+      try {
+        const name = await goalService.getUserName();
+        setUserName(name);
+      } catch (error) {
+        console.error('Error fetching user name:', error);
+        setUserName('User'); // Fallback name
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserName();
 
     // Set greeting based on time of day
     const hour = new Date().getHours();
@@ -24,6 +35,14 @@ const UserGreeting = () => {
     
     setGreeting(timeGreeting);
   }, []);
+
+  if (loading) {
+    return (
+      <div className="mb-6 animate-fade-in-up">
+        <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="mb-6 animate-fade-in-up">

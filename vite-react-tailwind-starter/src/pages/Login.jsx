@@ -26,10 +26,12 @@ const handleLogin = async (e) => {
     });
 
     Cookies.set("token", res.data.token, { expires: 1 });
-    toast.success("Login successful!");
-
-    // ✅ Force full page reload to /landing
-    window.location.href = "/landing";
+    toast.success("Logged in successfully!");
+    
+    // Small delay to ensure toast message is visible before navigation
+    setTimeout(() => {
+      navigate("/landing");
+    }, 1000);
   } catch (error) {
     console.error(error);
     toast.error("Login failed. Please check your credentials.");

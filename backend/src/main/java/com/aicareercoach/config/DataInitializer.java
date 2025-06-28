@@ -1,8 +1,11 @@
 package com.aicareercoach.config;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.aicareercoach.domain.Goal;
@@ -31,6 +34,9 @@ public class DataInitializer {
 
     @Autowired
     private TaskRepository taskRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @PostConstruct
     public void initializeData() {
@@ -76,29 +82,49 @@ public class DataInitializer {
         try {
             System.out.println("Starting test data initialization...");
             
-            // Create test user
-            User user = new User();
-            user.setFirstName("John");
-            user.setLastName("Doe");
-            user.setEmail("john.doe@example.com");
-            user.setPassword("$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG"); // password: password
-            user.setCurrentRole(JobRole.TECH_SUPPORT);
-            user.setYearsOfExperience(2);
-            user.setIsActive(true);
-            user.setEmailVerified(true);
-            user.setCreatedAt(LocalDateTime.now());
-            user.setUpdatedAt(LocalDateTime.now());
+            // Check if soma3 user already exists
+            Optional<User> existingUser = userRepository.findByEmail("soma3@example.com");
+            User user;
             
-            user = userRepository.save(user);
-            System.out.println("Created test user: " + user.getEmail());
+            if (existingUser.isPresent()) {
+                user = existingUser.get();
+                System.out.println("Found existing user: " + user.getEmail());
+            } else {
+                // Create test user - using soma3 credentials
+                user = new User();
+                user.setFirstName("Soma");
+                user.setLastName("User");
+                user.setEmail("soma3@example.com");
+                user.setPassword(passwordEncoder.encode("password"));
+                user.setCurrentRole(JobRole.TECH_SUPPORT);
+                user.setYearsOfExperience(2);
+                user.setIsActive(true);
+                user.setEmailVerified(true);
+                user.setCreatedAt(LocalDateTime.now());
+                user.setUpdatedAt(LocalDateTime.now());
+                
+                user = userRepository.save(user);
+                System.out.println("Created test user: " + user.getEmail());
+            }
+
+            // Check if user already has goals
+            List<Goal> existingGoals = goalRepository.findByUserIdOrderByCreatedAtDesc(user.getId());
+            if (!existingGoals.isEmpty()) {
+                System.out.println("User already has " + existingGoals.size() + " goals, skipping goal creation");
+                return;
+            }
 
             // Create test goal
             Goal goal = new Goal();
             goal.setUser(user);
             goal.setTitle("Become Full Stack Developer");
             goal.setDescription("Transition from tech support to full stack development");
+            goal.setCategory("career");
+            goal.setDailyHours(2.0);
+            goal.setDeadline(LocalDateTime.now().plusMonths(6));
             goal.setStatus("active");
             goal.setCreatedAt(LocalDateTime.now());
+            goal.setUpdatedAt(LocalDateTime.now());
             
             goal = goalRepository.save(goal);
             System.out.println("Created test goal: " + goal.getTitle());
