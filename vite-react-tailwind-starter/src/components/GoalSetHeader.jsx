@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Moon, Sun, Bell, Menu, Users, CheckSquare } from "lucide-react";
+import { Moon, Sun, Bell, Menu, Users, CheckSquare, Home } from "lucide-react";
 import ButtonSpinner from "./ButtonSpinner";
 import { useTheme } from "../context/ThemeContext";
 import sessionService from "../services/sessionService";
@@ -30,6 +30,15 @@ const GoalSetHeader = () => {
 
         {/* Desktop Nav */}
         <nav className="hidden lg:flex gap-6 items-center text-gray-800 dark:text-white">
+          {/* Dashboard */}
+          <button 
+            onClick={() => navigate("/landing")} 
+            className="flex items-center gap-2 hover:opacity-70 transition"
+          >
+            <Home size={20} />
+            <span>Dashboard</span>
+          </button>
+
           {/* Teams */}
           <div className="flex items-center gap-2 hover:opacity-70 transition cursor-pointer">
             <Users size={20} />
@@ -84,6 +93,16 @@ const GoalSetHeader = () => {
       {isMobileMenuOpen && (
         <div className="lg:hidden bg-white dark:bg-black border-t border-gray-200 dark:border-gray-700">
           <div className="px-4 py-2 space-y-2">
+            <button 
+              onClick={() => navigate("/landing")} 
+              className="block w-full text-left py-2 text-gray-800 dark:text-white hover:opacity-70"
+            >
+              <div className="flex items-center gap-2">
+                <Home size={20} />
+                <span>Dashboard</span>
+              </div>
+            </button>
+
             <div className="flex items-center gap-2 py-2 text-gray-800 dark:text-white">
               <Users size={20} />
               <span>Teams</span>

@@ -200,10 +200,10 @@ const GoalSetPage = () => {
         {/* Page Header */}
         <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-8 gap-4">
           <h1 className="text-4xl font-extrabold text-black dark:text-white animate-fade-in-up tracking-wide text-shadow-custom">
-            <span className="text-6xl text-indigo-600 dark:text-indigo-600">G</span>
-            <span className="text-black dark:text-white">oal </span>
             <span className="text-6xl text-indigo-600 dark:text-indigo-600">S</span>
-            <span className="text-black dark:text-white">etting</span>
+            <span className="text-black dark:text-white">mart Goals </span>
+            <span className="text-6xl text-indigo-600 dark:text-indigo-600">S</span>
+            <span className="text-black dark:text-white">marter You!</span>
           </h1>
 
           <button
