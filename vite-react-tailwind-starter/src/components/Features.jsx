@@ -26,7 +26,7 @@ const Features = () => {
       {features.map((f, index) => (
         <div
           key={index}
-          className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow hover:shadow-md transition"
+          className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow hover:shadow-md transition"
         >
           <h4 className="text-xl font-semibold mb-2">{f.title}</h4>
           <p className="text-gray-600 dark:text-gray-300">{f.description}</p>

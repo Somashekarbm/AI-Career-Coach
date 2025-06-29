@@ -24,7 +24,7 @@ const GoalSetHeader = () => {
       <div className="max-w-7xl mx-auto px-4 py-5 flex justify-between items-center">
         <div className="flex items-center gap-2">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            AI Career Coach
+          GoalForge AI
           </h1>
         </div>
 
@@ -36,7 +36,7 @@ const GoalSetHeader = () => {
             className="flex items-center gap-2 hover:opacity-70 transition"
           >
             <Home size={20} />
-            <span>Dashboard</span>
+            <span>Home</span>
           </button>
 
           {/* Teams */}

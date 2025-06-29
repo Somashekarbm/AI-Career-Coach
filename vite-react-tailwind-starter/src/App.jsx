@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Goal from "./pages/Goal";
 import GoalSetPage from "./pages/GoalSetPage";
+import TaskDetails from "./pages/TaskDetails";
 import { Toaster } from "react-hot-toast";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SessionTimeoutWarning from "./components/SessionTimeoutWarning";
@@ -61,6 +62,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <GoalSetPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tasks/:goalId"
+            element={
+              <ProtectedRoute>
+                <TaskDetails />
               </ProtectedRoute>
             }
           />

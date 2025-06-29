@@ -42,7 +42,7 @@ const Hero = () => {
   return (
     <section className="pt-12 sm:pt-16 px-4 bg-gray-50 dark:bg-black text-gray-900 dark:text-white">
       <div className="max-w-7xl mx-auto text-center">
-        <h1 className="text-lg text-gray-600 dark:text-gray-400 font-inter">
+        <h1 className="text-lg text-gray-700 dark:text-white/80 font-inter">
         AI-powered tools to launch and elevate your career
         </h1>
         <p className="mt-5 text-3xl sm:text-5xl lg:text-6xl font-bold leading-tight">
@@ -74,8 +74,8 @@ const Hero = () => {
           </a>
         </div>
 
-        <p className="mt-6 text-base text-gray-500 dark:text-gray-400">
-        Start planning your career with AI. To access all features, connect your OpenAI API key.
+        <p className="mt-6 text-base text-gray-700 dark:text-white/80">
+        Designed for students, job seekers, and working professionals.
         </p>
 
         <div className="mt-12">

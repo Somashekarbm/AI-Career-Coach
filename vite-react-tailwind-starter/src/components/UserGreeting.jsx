@@ -26,11 +26,11 @@ const UserGreeting = () => {
     let timeGreeting = '';
     
     if (hour < 12) {
-      timeGreeting = 'Good morning';
+      timeGreeting = 'Good Morning';
     } else if (hour < 17) {
-      timeGreeting = 'Good afternoon';
+      timeGreeting = 'Good Afternoon';
     } else {
-      timeGreeting = 'Good evening';
+      timeGreeting = 'Good Evening';
     }
     
     setGreeting(timeGreeting);
@@ -38,20 +38,29 @@ const UserGreeting = () => {
 
   if (loading) {
     return (
-      <div className="mb-6 animate-fade-in-up">
+      <div className="mb-4 animate-fade-in-up">
         <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
       </div>
     );
   }
 
   return (
-    <div className="mb-6 animate-fade-in-up">
-      <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200">
-        {greeting}, <span className="text-indigo-600 dark:text-indigo-400 font-bold">{userName}</span>! 👋
-      </h2>
-      <p className="text-gray-600 dark:text-gray-400 mt-1">
-        Ready to crush your goals today?
-      </p>
+    <div className="mb-4 animate-fade-in-up">
+      <div className="flex items-center gap-3">
+        <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+          <span className="text-white font-bold text-lg uppercase">
+            {userName.charAt(0).toUpperCase()}
+          </span>
+        </div>
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            {greeting}, <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">{userName}</span>! 👋
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 text-sm font-inter font-semibold">
+            Ready to crush your goals today?
+          </p>
+        </div>
+      </div>
     </div>
   );
 };

@@ -35,6 +35,8 @@ const GoalSetPage = () => {
   const [sortBy, setSortBy] = useState("createdAt");
   const [showTooltip, setShowTooltip] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [goalPrompt, setGoalPrompt] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
   
   const [formData, setFormData] = useState({
     title: "",
@@ -189,30 +191,162 @@ const GoalSetPage = () => {
     return categoryObj ? `tag-${categoryObj.color}` : 'tag-gray';
   };
 
+  const handleGenerateGoal = async () => {
+    if (!goalPrompt.trim()) {
+      toast.error('Please enter a goal description');
+      return;
+    }
+    
+    setIsGenerating(true);
+    try {
+      // TODO: Implement AI goal generation logic here
+      // For now, just show a placeholder message
+      toast.success('Goal generation feature coming soon! 🚀');
+      setGoalPrompt("");
+    } catch (error) {
+      console.error('Error generating goal:', error);
+      toast.error('Failed to generate goal');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <div className="bg-[#ffffff] dark:bg-[#121212] text-gray-900 dark:text-white min-h-screen flex flex-col">
       <GoalSetHeader />
       
       <main className="flex-1 max-w-7xl mx-auto px-4 py-8 w-full">
-        {/* User Greeting */}
-        <UserGreeting />
+        {/* Enhanced Header Section */}
+        <div className="mb-12">
+          {/* User Greeting and Main Title */}
+          <div className="flex flex-col xl:flex-row xl:justify-between xl:items-start gap-8 mb-10">
+            <div className="flex-1 max-w-4xl">
+              <UserGreeting />
+              
+              {/* Enhanced Smart Goals Title */}
+              <div className="mt-6 relative">
+                <div className="absolute -top-4 -left-4 w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full opacity-20 animate-pulse"></div>
+                <div className="absolute -bottom-4 -right-4 w-6 h-6 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full opacity-20 animate-pulse" style={{ animationDelay: '1s' }}></div>
+                
+                <h1 className="relative text-6xl lg:text-7xl xl:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 animate-fade-in-up tracking-tight leading-tight">
+                  <span className="block">Smart Goals</span>
+                  <span className="block text-5xl lg:text-6xl xl:text-7xl mt-3 ml-8">Smarter You!</span>
+                </h1>
+                
+                <div className="mt-6 ml-8">
+                  <div className="flex items-center gap-4">
+                    <div className="h-1 w-20 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full"></div>
+                    <p className="text-gray-600 dark:text-white text-xl font-medium">
+                      Transform your dreams into actionable plans
+                    </p>
+                  </div>
+                  
+                  
+                  
+                  {/* Inspirational Quote */}
+                  <div className="mt-20 max-w-2xl ">
+                  <blockquote className="mt-6 rounded-md border-l-4 border-indigo-500 bg-muted px-6 py-4 text-muted-foreground dark:bg-gray-800">
+      <p className="italic text-base md:text-lg">
+        "Small daily improvements are the key to staggering long-term results."
+      </p>
+      <footer className="mt-2 text-sm text-right text-gray-500 dark:text-gray-400">
+        – James Clear
+      </footer>
+    </blockquote>
+</div>
 
-        {/* Page Header */}
-        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-8 gap-4">
-          <h1 className="text-4xl font-extrabold text-black dark:text-white animate-fade-in-up tracking-wide text-shadow-custom">
-            <span className="text-6xl text-indigo-600 dark:text-indigo-600">G</span>
-            <span className="text-black dark:text-white">oal </span>
-            <span className="text-6xl text-indigo-600 dark:text-indigo-600">S</span>
-            <span className="text-black dark:text-white">etting</span>
-          </h1>
+                </div>
+              </div>
+            </div>
 
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="btn-hover bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 shadow-lg self-start lg:self-auto"
-          >
-            <Plus size={20} />
-            Create New Goal
-          </button>
+            {/* Goal Generation Section */}
+            <div className="xl:w-[420px] xl:flex-shrink-0">
+              <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 rounded-2xl p-8 border border-indigo-100 dark:border-gray-600 shadow-xl backdrop-blur-sm relative overflow-hidden">
+                {/* Background decoration */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-200 to-purple-200 dark:from-indigo-800 dark:to-purple-800 rounded-full -translate-y-16 translate-x-16 opacity-30"></div>
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-br from-pink-200 to-purple-200 dark:from-pink-800 dark:to-purple-800 rounded-full translate-y-12 -translate-x-12 opacity-30"></div>
+                
+                <div className="relative z-10">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                      <span className="text-white text-xl">✨</span>
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                        AI Goal Generator
+                      </h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Coming Soon
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
+                    Describe your goal in natural language and let our AI create a detailed, personalized plan with tasks, deadlines, and daily time allocation.
+                  </p>
+                  
+                  <div className="space-y-4">
+                    <div className="relative">
+                      <textarea
+                        value={goalPrompt}
+                        onChange={(e) => setGoalPrompt(e.target.value)}
+                        placeholder="e.g., I want to learn React and build a portfolio website in 3 months with 2 hours daily..."
+                        className="w-full p-4 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 shadow-sm"
+                        rows={4}
+                      />
+                      <div className="absolute bottom-3 right-3 text-xs text-gray-400">
+                        {goalPrompt.length}/500
+                      </div>
+                    </div>
+                    
+                    <div className="flex gap-3">
+                      <button
+                        onClick={handleGenerateGoal}
+                        disabled={isGenerating || !goalPrompt.trim()}
+                        className="flex-1 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none"
+                      >
+                        {isGenerating ? (
+                          <>
+                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            <span>Generating...</span>
+                          </>
+                        ) : (
+                          <>
+                            <span className="text-xl">🚀</span>
+                            <span>Generate Goal</span>
+                          </>
+                        )}
+                      </button>
+                      
+                      <button
+                        onClick={() => setIsModalOpen(true)}
+                        className="bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-4 py-3 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-gray-600 hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-200 flex items-center gap-2 shadow-sm hover:shadow-md"
+                      >
+                        <Plus size={18} />
+                        <span className="hidden sm:inline">Manual</span>
+                      </button>
+                    </div>
+                    
+                    {/* Feature highlights */}
+                    <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-600">
+                      <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        <span>AI-powered task breakdown</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                        <span>Smart time allocation</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                        <span>Progress tracking</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Search and Filters */}
@@ -287,7 +421,7 @@ const GoalSetPage = () => {
             {goals.map((goal, index) => (
               <div
                 key={goal.id}
-                className="goal-card bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 animate-fade-in-up shadow-soft"
+                className="goal-card bg-white/80 dark:bg-gray-800/80 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 animate-fade-in-up shadow-soft"
                 style={{
                   animationDelay: `${index * 150}ms`,
                   animationFillMode: 'both'
