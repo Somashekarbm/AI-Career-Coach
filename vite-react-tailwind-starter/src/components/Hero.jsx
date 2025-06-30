@@ -46,14 +46,19 @@ const Hero = () => {
           AI-powered tools to launch and elevate your career
         </h1>
         
-        <p className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight px-2 sm:px-4">
-          Reach your
-          <span className="relative inline-block mx-1 sm:mx-2">
-            <span className="bg-blue blur-lg opacity-30 absolute inset-0 rounded"></span>
-            <span className="relative bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl">Dream Goal</span>
-          </span>
-          with confidence
-        </p>
+        <p className="whitespace-nowrap text-center font-bold leading-tight px-4">
+  <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-white">
+    Reach your{" "}
+  </span>
+  <span className="bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl text-purple-600 font-extrabold">
+    Dream Goal
+  </span>
+  <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-white">
+    {" "}with confidence
+  </span>
+</p>
+
+
 
         <div className="mt-6 sm:mt-8 md:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 px-4 sm:px-0">
           <button

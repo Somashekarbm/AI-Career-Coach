@@ -21,7 +21,7 @@ public class AiTimelineService {
     private String openAiApiKey;
 
     private static final String OPENAI_URL = "https://api.openai.com/v1/chat/completions";
-    private static final String MODEL = "gpt-3.5-turbo";  //check for some good performance for task generation, low cost model(gpt-4.1-nano-2025-04-14)
+    private static final String MODEL = "gpt-4.1-nano-2025-04-14";  
 
     public TimelineResponse generateTimeline(TimelineRequest req) {
         if (!aiEnabled) {
