@@ -22,7 +22,16 @@ import {
   Brain,
   Trophy,
   Users,
-  Home
+  Home,
+  BarChart3,
+  Activity,
+  Layers,
+  Sparkles,
+  Timer,
+  CheckSquare,
+  Play,
+  Pause,
+  RotateCcw
 } from "lucide-react";
 import Footer from "../components/Footer";
 import MenuDropdown from "../components/MenuDropdown";
@@ -39,6 +48,8 @@ const TaskDetails = () => {
   const [totalDays, setTotalDays] = useState(30);
   const [loading, setLoading] = useState(true);
   const [autoSave, setAutoSave] = useState(true);
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [timerTime, setTimerTime] = useState(0);
   
   // Dropdown states
   const [showMoodDropdown, setShowMoodDropdown] = useState(false);
@@ -53,19 +64,19 @@ const TaskDetails = () => {
   // Task states - now organized by day
   const [tasksByDay, setTasksByDay] = useState({
     1: [
-      { id: 1, name: "Learn React Basics", completed: true, points: 100, estimatedTime: "2h" },
-      { id: 2, name: "Complete JSX Tutorial", completed: true, points: 150, estimatedTime: "1.5h" },
-      { id: 3, name: "Build Simple Component", completed: false, points: 200, estimatedTime: "3h" }
+      { id: 1, name: "Learn React Basics", completed: true, points: 100, estimatedTime: "2h", timeSpent: 120 },
+      { id: 2, name: "Complete JSX Tutorial", completed: true, points: 150, estimatedTime: "1.5h", timeSpent: 90 },
+      { id: 3, name: "Build Simple Component", completed: false, points: 200, estimatedTime: "3h", timeSpent: 0 }
     ],
     2: [
-      { id: 4, name: "State Management", completed: false, points: 120, estimatedTime: "2.5h" },
-      { id: 5, name: "Props and Components", completed: false, points: 180, estimatedTime: "2h" },
-      { id: 6, name: "Event Handling", completed: false, points: 160, estimatedTime: "1.5h" }
+      { id: 4, name: "State Management", completed: false, points: 120, estimatedTime: "2.5h", timeSpent: 0 },
+      { id: 5, name: "Props and Components", completed: false, points: 180, estimatedTime: "2h", timeSpent: 0 },
+      { id: 6, name: "Event Handling", completed: false, points: 160, estimatedTime: "1.5h", timeSpent: 0 }
     ],
     3: [
-      { id: 7, name: "Hooks Introduction", completed: false, points: 140, estimatedTime: "2h" },
-      { id: 8, name: "useState Practice", completed: false, points: 170, estimatedTime: "2.5h" },
-      { id: 9, name: "useEffect Examples", completed: false, points: 190, estimatedTime: "2h" }
+      { id: 7, name: "Hooks Introduction", completed: false, points: 140, estimatedTime: "2h", timeSpent: 0 },
+      { id: 8, name: "useState Practice", completed: false, points: 170, estimatedTime: "2.5h", timeSpent: 0 },
+      { id: 9, name: "useEffect Examples", completed: false, points: 190, estimatedTime: "2h", timeSpent: 0 }
     ]
   });
   
@@ -80,15 +91,15 @@ const TaskDetails = () => {
   const [overallProgress, setOverallProgress] = useState(0);
 
   const moodOptions = [
-    { value: "motivated", label: "Motivated", emoji: "💪", color: "from-green-400 to-emerald-500" },
-    { value: "neutral", label: "Neutral", emoji: "😐", color: "from-blue-400 to-cyan-500" },
-    { value: "tired", label: "Tired", emoji: "😴", color: "from-orange-400 to-red-500" }
+    { value: "motivated", label: "Motivated", emoji: "💪", color: "from-emerald-500 to-green-600" },
+    { value: "neutral", label: "Neutral", emoji: "😐", color: "from-blue-500 to-cyan-600" },
+    { value: "tired", label: "Tired", emoji: "😴", color: "from-orange-500 to-red-600" }
   ];
 
   const lifeEventOptions = [
-    { value: "health", label: "Health Issue", emoji: "🏥", color: "from-red-400 to-pink-500" },
-    { value: "family", label: "Family Emergency", emoji: "👨‍👩‍👧‍👦", color: "from-purple-400 to-indigo-500" },
-    { value: "others", label: "Others", emoji: "📝", color: "from-gray-400 to-slate-500" }
+    { value: "health", label: "Health Issue", emoji: "🏥", color: "from-red-500 to-pink-600" },
+    { value: "family", label: "Family Emergency", emoji: "👨‍👩‍👧‍👦", color: "from-purple-500 to-indigo-600" },
+    { value: "others", label: "Others", emoji: "📝", color: "from-gray-500 to-slate-600" }
   ];
 
   useEffect(() => {
@@ -98,6 +109,17 @@ const TaskDetails = () => {
   useEffect(() => {
     calculateOverallProgress();
   }, [tasksByDay, currentDay]);
+
+  // Timer effect
+  useEffect(() => {
+    let interval;
+    if (isTimerRunning) {
+      interval = setInterval(() => {
+        setTimerTime(prev => prev + 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isTimerRunning]);
 
   // Click outside handler for dropdowns
   useEffect(() => {
@@ -238,19 +260,26 @@ const TaskDetails = () => {
     return { days, hours };
   };
 
+  const formatTime = (seconds) => {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
   const timeRemaining = calculateTimeRemaining();
   const currentDayTasks = tasksByDay[currentDay] || [];
   const currentDayData = dayData[currentDay] || { mood: "", lifeEvent: "", note: "" };
 
   if (loading) {
     return (
-      <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 min-h-screen">
+      <div className="bg-gray-50 dark:bg-gray-900 min-h-screen">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="animate-pulse space-y-6">
-            <div className="h-16 bg-white/50 dark:bg-gray-800/50 rounded-xl backdrop-blur-sm"></div>
+            <div className="h-16 bg-white dark:bg-gray-800 rounded-xl"></div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2 h-96 bg-white/50 dark:bg-gray-800/50 rounded-xl backdrop-blur-sm"></div>
-              <div className="h-96 bg-white/50 dark:bg-gray-800/50 rounded-xl backdrop-blur-sm"></div>
+              <div className="lg:col-span-2 h-96 bg-white dark:bg-gray-800 rounded-xl"></div>
+              <div className="h-96 bg-white dark:bg-gray-800 rounded-xl"></div>
             </div>
           </div>
         </div>
@@ -259,18 +288,17 @@ const TaskDetails = () => {
   }
 
   return (
-    <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 min-h-screen flex flex-col">
-      {/* Header Section */}
-      <header className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md shadow-lg border-b border-white/20 dark:border-gray-700/50 sticky top-0 z-50">
+    <div className="bg-gray-50 dark:bg-gray-900 min-h-screen">
+      {/* Header */}
+      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            {/* Brand Name */}
             <div className="flex items-center gap-4">
               <button
                 onClick={() => navigate(-1)}
-                className="p-3 hover:bg-white/50 dark:hover:bg-gray-700/50 rounded-xl transition-all duration-300 group"
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
               >
-                <ArrowLeft size={20} className="text-gray-600 dark:text-gray-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" />
+                <ArrowLeft size={20} className="text-gray-600 dark:text-gray-400" />
               </button>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
@@ -282,59 +310,50 @@ const TaskDetails = () => {
               </div>
             </div>
 
-            {/* Navigation */}
-            <nav className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <button 
                 onClick={() => navigate("/landing")}
-                className="text-indigo-600 dark:text-indigo-400 font-medium hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-white/50 dark:hover:bg-gray-700/50"
+                className="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
               >
-                <Home size={16} />
-                Home
+                <Home size={20} />
               </button>
               <button 
                 onClick={() => navigate("/teams")}
-                className="text-indigo-600 dark:text-indigo-400 font-medium hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors px-4 py-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-700/50 flex items-center gap-2"
+                className="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
               >
-                <Users size={16} />
-                <span>Teams</span>
+                <Users size={20} />
               </button>
-              <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 bg-white/50 dark:bg-gray-700/50 px-4 py-2 rounded-lg">
+              <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded-lg">
                 <TrendingUp size={16} className="text-green-500" />
                 <span className="font-medium">{totalPoints} Points</span>
               </div>
-              <button className="p-3 hover:bg-white/50 dark:hover:bg-gray-700/50 rounded-xl transition-all duration-300 relative group">
-                <Bell size={20} className="text-gray-600 dark:text-gray-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" />
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
-              </button>
-              
-              {/* Menu Dropdown */}
               <MenuDropdown />
-            </nav>
+            </div>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 max-w-7xl mx-auto px-6 py-8 w-full">
+      <main className="max-w-7xl mx-auto px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Side - Timeline Card */}
+          {/* Left Column - Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Goal Header Card */}
-            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl p-8 shadow-xl border border-white/20 dark:border-gray-700/50">
+            {/* Goal Header */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm border border-gray-200 dark:border-gray-700">
               <div className="flex items-start justify-between mb-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                    <Target size={28} className="text-white" />
+                  <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                    <Target size={32} className="text-white" />
                   </div>
                   <div>
-                    <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+                    <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
                       {goal?.title}
                     </h2>
-                    <p className="text-gray-600 dark:text-gray-400 mt-1">Timeline & Progress</p>
+                    <p className="text-gray-600 dark:text-gray-400">Day {currentDay} of {totalDays}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+                  <div className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                     {Math.round(overallProgress)}%
                   </div>
                   <div className="text-sm text-gray-600 dark:text-gray-400">Complete</div>
@@ -343,228 +362,142 @@ const TaskDetails = () => {
               
               {/* Progress Bar */}
               <div className="relative">
-                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 overflow-hidden">
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
                   <div 
-                    className="bg-gradient-to-r from-green-500 via-blue-500 to-purple-500 h-4 rounded-full transition-all duration-1000 ease-out shadow-lg"
+                    className="bg-gradient-to-r from-indigo-500 to-purple-600 h-3 rounded-full transition-all duration-1000 ease-out shadow-lg"
                     style={{ width: `${overallProgress}%` }}
                   ></div>
-                </div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="bg-white dark:bg-gray-800 px-3 py-1 rounded-full text-xs font-bold text-gray-900 dark:text-white shadow-lg">
-                    {Math.round(overallProgress)}% Complete
-                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Day-specific Task Section */}
-            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl p-8 shadow-xl border border-white/20 dark:border-gray-700/50">
-              <div className="flex items-center justify-between mb-6">
+            {/* Task Management */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm border border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-between mb-8">
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-                  <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-                    <Calendar size={20} className="text-white" />
+                  <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
+                    <Layers size={20} className="text-white" />
                   </div>
-                  Day {currentDay} Tasks
+                  Today's Tasks
                 </h3>
                 <div className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-lg">
-                  <Zap size={16} />
+                  <Activity size={16} />
                   <span className="font-medium">Active</span>
                 </div>
               </div>
 
-              {/* Task Management Controls */}
-              <div className="space-y-4 mb-8">
-                {/* Mood and Life Event Dropdowns */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="relative" ref={moodDropdownRef}>
-                    <button 
-                      onClick={() => setShowMoodDropdown(!showMoodDropdown)}
-                      className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-6 py-4 rounded-xl font-medium flex items-center justify-between transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-                    >
-                      <div className="flex items-center gap-3">
-                        <Brain size={20} />
-                        <span>{currentDayData.mood ? moodOptions.find(m => m.value === currentDayData.mood)?.label : "Select Mood"}</span>
-                      </div>
-                      <ChevronDownIcon size={20} />
-                    </button>
-                    
-                    {showMoodDropdown && (
-                      <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl shadow-2xl z-10 overflow-hidden">
-                        {moodOptions.map((option) => (
-                          <button
-                            key={option.value}
-                            onClick={() => {
-                              updateDayData('mood', option.value);
-                              setShowMoodDropdown(false);
-                            }}
-                            className="w-full px-6 py-4 text-left hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors flex items-center gap-3 border-b border-gray-100 dark:border-gray-600 last:border-b-0"
-                          >
-                            <div className={`w-8 h-8 bg-gradient-to-r ${option.color} rounded-lg flex items-center justify-center`}>
-                              <span className="text-white text-sm">{option.emoji}</span>
-                            </div>
-                            <span className="font-medium">{option.label}</span>
-                          </button>
-                        ))}
-                        {currentDayData.mood && (
-                          <button
-                            onClick={() => {
-                              updateDayData('mood', "");
-                              setShowMoodDropdown(false);
-                            }}
-                            className="w-full px-6 py-4 text-left hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-3 text-red-600 dark:text-red-400 border-t border-gray-200 dark:border-gray-600"
-                          >
-                            <X size={20} />
-                            <span>Remove Selection</span>
-                          </button>
-                        )}
-                      </div>
-                    )}
-                  </div>
+              {/* Task Controls */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                {/* Mood Selection */}
+                <div className="relative" ref={moodDropdownRef}>
+                  <button 
+                    onClick={() => setShowMoodDropdown(!showMoodDropdown)}
+                    className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:border-indigo-300 dark:hover:border-indigo-500 px-4 py-3 rounded-xl font-medium flex items-center justify-between transition-all duration-200"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Brain size={18} className="text-indigo-600" />
+                      <span className="text-gray-700 dark:text-gray-300">
+                        {currentDayData.mood ? moodOptions.find(m => m.value === currentDayData.mood)?.label : "Select Mood"}
+                      </span>
+                    </div>
+                    <ChevronDownIcon size={16} className="text-gray-500" />
+                  </button>
                   
-                  <div className="relative" ref={lifeEventDropdownRef}>
-                    <button 
-                      onClick={() => setShowLifeEventDropdown(!showLifeEventDropdown)}
-                      className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-6 py-4 rounded-xl font-medium flex items-center justify-between transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-                    >
-                      <div className="flex items-center gap-3">
-                        <Heart size={20} />
-                        <span>{currentDayData.lifeEvent ? lifeEventOptions.find(l => l.value === currentDayData.lifeEvent)?.label : "Life Event"}</span>
-                      </div>
-                      <ChevronDownIcon size={20} />
-                    </button>
-                    
-                    {showLifeEventDropdown && (
-                      <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl shadow-2xl z-10 overflow-hidden">
-                        {lifeEventOptions.map((option) => (
-                          <button
-                            key={option.value}
-                            onClick={() => {
-                              updateDayData('lifeEvent', option.value);
-                              setShowLifeEventDropdown(false);
-                            }}
-                            className="w-full px-6 py-4 text-left hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors flex items-center gap-3 border-b border-gray-100 dark:border-gray-600 last:border-b-0"
-                          >
-                            <div className={`w-8 h-8 bg-gradient-to-r ${option.color} rounded-lg flex items-center justify-center`}>
-                              <span className="text-white text-sm">{option.emoji}</span>
-                            </div>
-                            <span className="font-medium">{option.label}</span>
-                          </button>
-                        ))}
-                        {currentDayData.lifeEvent && (
-                          <button
-                            onClick={() => {
-                              updateDayData('lifeEvent', "");
-                              setShowLifeEventDropdown(false);
-                            }}
-                            className="w-full px-6 py-4 text-left hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-3 text-red-600 dark:text-red-400 border-t border-gray-200 dark:border-gray-600"
-                          >
-                            <X size={20} />
-                            <span>Remove Selection</span>
-                          </button>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                  {showMoodDropdown && (
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl shadow-xl z-10 overflow-hidden">
+                      {moodOptions.map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => {
+                            updateDayData('mood', option.value);
+                            setShowMoodDropdown(false);
+                          }}
+                          className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors flex items-center gap-3 border-b border-gray-100 dark:border-gray-600 last:border-b-0"
+                        >
+                          <div className={`w-8 h-8 bg-gradient-to-r ${option.color} rounded-lg flex items-center justify-center`}>
+                            <span className="text-white text-sm">{option.emoji}</span>
+                          </div>
+                          <span className="font-medium text-gray-700 dark:text-gray-300">{option.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                
+                {/* Life Event Selection */}
+                <div className="relative" ref={lifeEventDropdownRef}>
+                  <button 
+                    onClick={() => setShowLifeEventDropdown(!showLifeEventDropdown)}
+                    className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:border-indigo-300 dark:hover:border-indigo-500 px-4 py-3 rounded-xl font-medium flex items-center justify-between transition-all duration-200"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Heart size={18} className="text-pink-600" />
+                      <span className="text-gray-700 dark:text-gray-300">
+                        {currentDayData.lifeEvent ? lifeEventOptions.find(l => l.value === currentDayData.lifeEvent)?.label : "Life Event"}
+                      </span>
+                    </div>
+                    <ChevronDownIcon size={16} className="text-gray-500" />
+                  </button>
+                  
+                  {showLifeEventDropdown && (
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl shadow-xl z-10 overflow-hidden">
+                      {lifeEventOptions.map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => {
+                            updateDayData('lifeEvent', option.value);
+                            setShowLifeEventDropdown(false);
+                          }}
+                          className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors flex items-center gap-3 border-b border-gray-100 dark:border-gray-600 last:border-b-0"
+                        >
+                          <div className={`w-8 h-8 bg-gradient-to-r ${option.color} rounded-lg flex items-center justify-center`}>
+                            <span className="text-white text-sm">{option.emoji}</span>
+                          </div>
+                          <span className="font-medium text-gray-700 dark:text-gray-300">{option.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Note Input */}
                 <div className="relative" ref={noteInputRef}>
                   <button
                     onClick={() => setShowNoteInput(!showNoteInput)}
-                    className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-6 py-4 rounded-xl font-medium flex items-center justify-center gap-3 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                    className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:border-indigo-300 dark:hover:border-indigo-500 px-4 py-3 rounded-xl font-medium flex items-center justify-center gap-3 transition-all duration-200"
                   >
-                    <FileText size={20} />
-                    <span>{currentDayData.note ? "Edit Note" : "Add Note"}</span>
+                    <FileText size={18} className="text-blue-600" />
+                    <span className="text-gray-700 dark:text-gray-300">{currentDayData.note ? "Edit Note" : "Add Note"}</span>
                   </button>
                   
                   {showNoteInput && (
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl shadow-2xl z-10 p-6">
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl shadow-xl z-10 p-4">
                       <textarea
                         value={currentDayData.note}
                         onChange={(e) => updateDayData('note', e.target.value)}
                         placeholder="Add a note about your day..."
-                        className="w-full p-4 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200"
-                        rows={4}
+                        className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                        rows={3}
                       />
-                      <div className="flex gap-3 mt-4">
-                        <button
-                          onClick={() => {
-                            updateDayData('note', "");
-                            setShowNoteInput(false);
-                          }}
-                          className="px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors font-medium"
-                        >
-                          Clear
-                        </button>
+                      <div className="flex gap-2 mt-3">
                         <button
                           onClick={() => setShowNoteInput(false)}
-                          className="px-4 py-2 text-sm bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors font-medium ml-auto"
+                          className="px-3 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors font-medium"
                         >
-                          Save Note
+                          Save
                         </button>
                       </div>
                     </div>
                   )}
                 </div>
-
-                {/* Display Current Selections */}
-                {(currentDayData.mood || currentDayData.lifeEvent || currentDayData.note) && (
-                  <div className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-gray-700/50 dark:to-gray-600/50 backdrop-blur-sm rounded-xl p-6 border border-indigo-100 dark:border-gray-600">
-                    <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                      <Star size={20} className="text-yellow-500" />
-                      Day {currentDay} Selections
-                    </h4>
-                    <div className="space-y-3">
-                      {currentDayData.mood && (
-                        <div className="flex items-center gap-3 p-3 bg-white/80 dark:bg-gray-800/80 rounded-lg">
-                          <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-emerald-500 rounded-lg flex items-center justify-center">
-                            <span className="text-white text-sm">{moodOptions.find(m => m.value === currentDayData.mood)?.emoji}</span>
-                          </div>
-                          <div>
-                            <div className="text-sm font-medium text-gray-900 dark:text-white">
-                              {moodOptions.find(m => m.value === currentDayData.mood)?.label}
-                            </div>
-                            <div className="text-xs text-gray-600 dark:text-gray-400">Mood</div>
-                          </div>
-                        </div>
-                      )}
-                      {currentDayData.lifeEvent && (
-                        <div className="flex items-center gap-3 p-3 bg-white/80 dark:bg-gray-800/80 rounded-lg">
-                          <div className="w-8 h-8 bg-gradient-to-r from-red-400 to-pink-500 rounded-lg flex items-center justify-center">
-                            <span className="text-white text-sm">{lifeEventOptions.find(l => l.value === currentDayData.lifeEvent)?.emoji}</span>
-                          </div>
-                          <div>
-                            <div className="text-sm font-medium text-gray-900 dark:text-white">
-                              {lifeEventOptions.find(l => l.value === currentDayData.lifeEvent)?.label}
-                            </div>
-                            <div className="text-xs text-gray-600 dark:text-gray-400">Life Event</div>
-                          </div>
-                        </div>
-                      )}
-                      {currentDayData.note && (
-                        <div className="p-3 bg-white/80 dark:bg-gray-800/80 rounded-lg">
-                          <div className="flex items-start gap-3">
-                            <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                              <FileText size={16} className="text-white" />
-                            </div>
-                            <div className="flex-1">
-                              <div className="text-sm font-medium text-gray-900 dark:text-white mb-1">Note</div>
-                              <div className="text-sm text-gray-700 dark:text-gray-300 italic">{currentDayData.note}</div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
               </div>
 
               {/* Task List */}
               <div className="space-y-4">
                 {currentDayTasks.map((task, index) => (
-                  <div key={task.id} className="bg-white/60 dark:bg-gray-700/60 backdrop-blur-sm rounded-xl p-6 border border-white/20 dark:border-gray-600/50 hover:bg-white/80 dark:hover:bg-gray-700/80 transition-all duration-300 group">
+                  <div key={task.id} className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-6 border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 group">
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-sm group-hover:scale-110 transition-transform">
+                      <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-lg group-hover:scale-110 transition-transform">
                         {String.fromCharCode(65 + index)}
                       </div>
                       
@@ -575,7 +508,7 @@ const TaskDetails = () => {
                         <div className="flex items-center gap-4 mt-2">
                           <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
                             <Trophy size={14} className="text-yellow-500" />
-                            <span>{task.points}+ points</span>
+                            <span>{task.points} points</span>
                           </div>
                           <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
                             <Clock size={14} className="text-blue-500" />
@@ -586,7 +519,7 @@ const TaskDetails = () => {
                       
                       <button
                         onClick={() => handleTaskToggle(task.id)}
-                        className="p-3 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-xl transition-all duration-300 group-hover:scale-110"
+                        className="p-3 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-xl transition-all duration-200 group-hover:scale-110"
                       >
                         {task.completed ? (
                           <CheckCircle size={24} className="text-green-500" />
@@ -603,14 +536,14 @@ const TaskDetails = () => {
               <div className="flex gap-4 mt-8">
                 <button 
                   onClick={handleComplete}
-                  className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center gap-3"
+                  className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center gap-3"
                 >
                   <Trophy size={20} />
                   Complete Day
                 </button>
                 <button
                   onClick={handleUpdate}
-                  className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center gap-3"
+                  className="flex-1 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center gap-3"
                 >
                   <Save size={20} />
                   Update Timeline
@@ -619,54 +552,87 @@ const TaskDetails = () => {
             </div>
           </div>
 
-          {/* Right Side Features */}
+          {/* Right Column - Sidebar */}
           <div className="space-y-6">
+            {/* Timer */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
+                  <Timer size={20} className="text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                  Focus Timer
+                </h3>
+              </div>
+              
+              <div className="text-center mb-4">
+                <div className="text-3xl font-mono font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+                  {formatTime(timerTime)}
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setIsTimerRunning(!isTimerRunning)}
+                  className="flex-1 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2"
+                >
+                  {isTimerRunning ? <Pause size={16} /> : <Play size={16} />}
+                  {isTimerRunning ? 'Pause' : 'Start'}
+                </button>
+                <button
+                  onClick={() => setTimerTime(0)}
+                  className="p-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
+                >
+                  <RotateCcw size={16} className="text-gray-600 dark:text-gray-400" />
+                </button>
+              </div>
+            </div>
+
             {/* Deadline Counter */}
-            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl p-6 shadow-xl border border-white/20 dark:border-gray-700/50">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-pink-500 rounded-xl flex items-center justify-center">
                   <Clock size={20} className="text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                  Deadline Counter
+                  Deadline
                 </h3>
               </div>
               
               <div className="text-center">
-                <div className="text-4xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent mb-2">
+                <div className="text-2xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent mb-2">
                   {timeRemaining.days}d {timeRemaining.hours}h
                 </div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  remaining until deadline
+                  remaining
                 </p>
               </div>
             </div>
 
             {/* Day Navigation */}
-            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl p-6 shadow-xl border border-white/20 dark:border-gray-700/50">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
                   <Calendar size={20} className="text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                  Day Navigation
+                  Navigation
                 </h3>
               </div>
               
-              <div className="text-center mb-6">
-                <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+              <div className="text-center mb-4">
+                <div className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                   Day {currentDay} of {totalDays}
                 </div>
               </div>
 
-              {/* Day Navigation Controls */}
               <div className="flex items-center justify-between mb-4">
                 <button
                   onClick={() => handleDayChange(currentDay - 1)}
                   disabled={currentDay <= 1}
-                  className="p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed group"
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <ArrowLeft size={20} className="text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
+                  <ArrowLeft size={20} className="text-gray-600 dark:text-gray-400" />
                 </button>
                 
                 <div className="flex-1 mx-4">
@@ -676,35 +642,35 @@ const TaskDetails = () => {
                     max={totalDays}
                     value={currentDay}
                     onChange={(e) => handleDayChange(parseInt(e.target.value))}
-                    className="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                    className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
                   />
                 </div>
                 
                 <button
                   onClick={() => handleDayChange(currentDay + 1)}
                   disabled={currentDay >= totalDays}
-                  className="p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed group"
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <ArrowRight size={20} className="text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
+                  <ArrowRight size={20} className="text-gray-600 dark:text-gray-400" />
                 </button>
               </div>
             </div>
 
             {/* Auto-save Toggle */}
-            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl p-6 shadow-xl border border-white/20 dark:border-gray-700/50">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between">
                 <div>
                   <h4 className="font-semibold text-gray-900 dark:text-white">Auto-save</h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Automatically save progress</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Save progress automatically</p>
                 </div>
                 <button
                   onClick={() => setAutoSave(!autoSave)}
-                  className={`relative inline-flex h-7 w-12 items-center rounded-full transition-all duration-300 ${
-                    autoSave ? 'bg-gradient-to-r from-purple-500 to-pink-500' : 'bg-gray-300 dark:bg-gray-600'
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-all duration-300 ${
+                    autoSave ? 'bg-gradient-to-r from-indigo-500 to-purple-500' : 'bg-gray-300 dark:bg-gray-600'
                   }`}
                 >
                   <span
-                    className={`inline-block h-5 w-5 transform rounded-full bg-white transition-all duration-300 shadow-lg ${
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-all duration-300 shadow-lg ${
                       autoSave ? 'translate-x-6' : 'translate-x-1'
                     }`}
                   />
