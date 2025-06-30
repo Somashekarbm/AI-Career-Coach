@@ -35,7 +35,7 @@ const Footer = () => {
 
   return (
     <>
-      <footer className="bg-white dark:bg-[#121212] border-t border-gray-200 dark:border-gray-700 py-1 mt-12 sm:py-8 sm:px-6 lg:px-8">
+      <footer className="bg-white dark:bg-[#121212] border-t border-gray-200 dark:border-gray-700 py-2 sm:py-8 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto text-center">
           <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
             &copy; {new Date().getFullYear()} AI Career Coach. All rights reserved.

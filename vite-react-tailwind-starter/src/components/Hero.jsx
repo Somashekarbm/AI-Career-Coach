@@ -46,7 +46,7 @@ const Hero = () => {
           AI-powered tools to launch and elevate your career
         </h1>
         
-        <p className="whitespace-nowrap text-center font-bold leading-tight px-4">
+        <p className="whitespace-nowrap text-center font-bold leading-tight">
   <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-white">
     Reach your{" "}
   </span>
