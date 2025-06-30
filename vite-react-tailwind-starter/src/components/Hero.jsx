@@ -40,33 +40,34 @@ const Hero = () => {
   };
 
   return (
-    <section className="pt-12 sm:pt-16 px-4 bg-gray-50 dark:bg-black text-gray-900 dark:text-white">
-      <div className="max-w-7xl mx-auto text-center">
-        <h1 className="text-lg text-gray-700 dark:text-white/80 font-inter">
-        AI-powered tools to launch and elevate your career
+    <section className="pt-8 sm:pt-12 md:pt-16 lg:pt-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-black text-gray-900 dark:text-white min-h-screen flex items-center">
+      <div className="max-w-7xl mx-auto text-center w-full">
+        <h1 className="text-sm sm:text-base md:text-lg text-gray-700 dark:text-white/80 font-inter mb-4 sm:mb-6">
+          AI-powered tools to launch and elevate your career
         </h1>
-        <p className="mt-5 text-3xl sm:text-5xl lg:text-6xl font-bold leading-tight">
+        
+        <p className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight px-2 sm:px-4">
           Reach your
-          <span className="relative inline-block mx-2">
+          <span className="relative inline-block mx-1 sm:mx-2">
             <span className="bg-blue blur-lg opacity-30 absolute inset-0 rounded"></span>
-            <span className="relative text-indigo-600 text-7xl">Dream Goal</span>
+            <span className="relative bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl">Dream Goal</span>
           </span>
           with confidence
         </p>
 
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div className="mt-6 sm:mt-8 md:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 px-4 sm:px-0">
           <button
             onClick={handleClick}
-            className="inline-flex items-center px-8 py-3 text-lg font-bold text-white bg-gray-900 rounded-xl hover:bg-gray-700 transition"
+            className="w-full sm:w-auto inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-3 text-base sm:text-lg font-bold text-white bg-gray-900 rounded-xl hover:bg-gray-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
           >
             {isLoggedIn ? "Create Goal" : "Get Started"}
           </button>
 
           <a
             href="#"
-            className="inline-flex items-center px-6 py-3 text-lg font-bold text-gray-900 dark:text-white border-2 border-gray-400 rounded-xl hover:bg-gray-900 hover:text-white transition"
+            className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 text-base sm:text-lg font-bold text-gray-900 dark:text-white border-2 border-gray-400 rounded-xl hover:bg-gray-900 hover:text-white transition-all duration-300 transform hover:scale-105"
           >
-            <svg className="w-5 h-5 mr-2" viewBox="0 0 18 18" fill="none" stroke="currentColor">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" viewBox="0 0 18 18" fill="none" stroke="currentColor">
               <path d="M8.18 13.43C6.86 14.39 5 13.45 5 11.81V5.44C5 3.80 6.86 2.86 8.18 3.82L12.54 7.01C13.63 7.81 13.63 9.44 12.54 10.24L8.18 13.43Z"
                 strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -74,13 +75,13 @@ const Hero = () => {
           </a>
         </div>
 
-        <p className="mt-6 text-base text-gray-700 dark:text-white/80">
-        Designed for students, job seekers, and working professionals.
+        <p className="mt-4 sm:mt-6 text-sm sm:text-base text-gray-700 dark:text-white/80 px-4 sm:px-0">
+          Designed for students, job seekers, and working professionals.
         </p>
 
-        <div className="mt-12">
+        <div className="mt-8 sm:mt-10 md:mt-12 lg:mt-16 px-2 sm:px-4 lg:px-8">
           <img
-            className="mx-auto max-w-4xl w-full transform scale-105"
+            className="mx-auto max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl w-full transform scale-105 hover:scale-110 transition-transform duration-500"
             src="https://cdn.rareblocks.xyz/collection/clarity/images/hero/2/illustration.png"
             alt="Illustration"
           />

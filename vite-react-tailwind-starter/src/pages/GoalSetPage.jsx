@@ -212,10 +212,10 @@ const GoalSetPage = () => {
   };
 
   return (
-    <div className="bg-[#ffffff] dark:bg-[#121212] text-gray-900 dark:text-white min-h-screen flex flex-col">
+    <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 min-h-screen flex flex-col">
       <GoalSetHeader />
       
-      <main className="flex-1 max-w-7xl mx-auto px-4 py-8 w-full">
+      <main className="flex-1 max-w-7xl mx-auto px-6 py-8 w-full">
         {/* Enhanced Header Section */}
         <div className="mb-12">
           {/* User Greeting and Main Title */}
@@ -228,40 +228,37 @@ const GoalSetPage = () => {
                 <div className="absolute -top-4 -left-4 w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full opacity-20 animate-pulse"></div>
                 <div className="absolute -bottom-4 -right-4 w-6 h-6 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full opacity-20 animate-pulse" style={{ animationDelay: '1s' }}></div>
                 
-                <h1 className="relative text-6xl lg:text-7xl xl:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 animate-fade-in-up tracking-tight leading-tight">
+                <h1 className="relative text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 animate-fade-in-up tracking-tight leading-tight">
                   <span className="block">Smart Goals</span>
-                  <span className="block text-5xl lg:text-6xl xl:text-7xl mt-3 ml-8">Smarter You!</span>
+                  <span className="block text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl mt-3 ml-4 md:ml-8">Smarter You!</span>
                 </h1>
                 
-                <div className="mt-6 ml-8">
-                  <div className="flex items-center gap-4">
-                    <div className="h-1 w-20 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full"></div>
-                    <p className="text-gray-600 dark:text-white text-xl font-medium">
+                <div className="mt-6 ml-4 md:ml-8">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                    <div className="h-1 w-16 sm:w-20 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full"></div>
+                    <p className="text-gray-600 dark:text-white text-lg sm:text-xl font-medium">
                       Transform your dreams into actionable plans
                     </p>
                   </div>
                   
-                  
-                  
                   {/* Inspirational Quote */}
-                  <div className="mt-20 max-w-2xl ">
-                  <blockquote className="mt-6 rounded-md border-l-4 border-indigo-500 bg-muted px-6 py-4 text-muted-foreground dark:bg-gray-800">
-      <p className="italic text-base md:text-lg">
-        "Small daily improvements are the key to staggering long-term results."
-      </p>
-      <footer className="mt-2 text-sm text-right text-gray-500 dark:text-gray-400">
-        – James Clear
-      </footer>
-    </blockquote>
-</div>
-
+                  <div className="mt-12 sm:mt-16 md:mt-20 max-w-2xl">
+                    <blockquote className="rounded-xl border-l-4 border-indigo-500 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm px-6 py-4 shadow-lg border border-white/20 dark:border-gray-700/50">
+                      <p className="italic text-base md:text-lg text-gray-700 dark:text-gray-300">
+                        "Small daily improvements are the key to staggering long-term results."
+                      </p>
+                      <footer className="mt-2 text-sm text-right text-gray-500 dark:text-gray-400">
+                        – James Clear
+                      </footer>
+                    </blockquote>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Goal Generation Section */}
             <div className="xl:w-[420px] xl:flex-shrink-0">
-              <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 rounded-2xl p-8 border border-indigo-100 dark:border-gray-600 shadow-xl backdrop-blur-sm relative overflow-hidden">
+              <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 rounded-2xl p-6 sm:p-8 border border-indigo-100 dark:border-gray-600 shadow-xl backdrop-blur-sm relative overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-105">
                 {/* Background decoration */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-200 to-purple-200 dark:from-indigo-800 dark:to-purple-800 rounded-full -translate-y-16 translate-x-16 opacity-30"></div>
                 <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-br from-pink-200 to-purple-200 dark:from-pink-800 dark:to-purple-800 rounded-full translate-y-12 -translate-x-12 opacity-30"></div>
@@ -299,7 +296,7 @@ const GoalSetPage = () => {
                       </div>
                     </div>
                     
-                    <div className="flex gap-3">
+                    <div className="flex flex-col sm:flex-row gap-3">
                       <button
                         onClick={handleGenerateGoal}
                         disabled={isGenerating || !goalPrompt.trim()}
@@ -320,10 +317,10 @@ const GoalSetPage = () => {
                       
                       <button
                         onClick={() => setIsModalOpen(true)}
-                        className="bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-4 py-3 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-gray-600 hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-200 flex items-center gap-2 shadow-sm hover:shadow-md"
+                        className="bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-4 py-3 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-gray-600 hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-200 flex items-center justify-center gap-2 shadow-sm hover:shadow-md"
                       >
                         <Plus size={18} />
-                        <span className="hidden sm:inline">Manual</span>
+                        <span>Manual</span>
                       </button>
                     </div>
                     
@@ -359,20 +356,22 @@ const GoalSetPage = () => {
               placeholder="Search goals..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="search-bar pl-10"
+              className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 shadow-sm"
             />
           </div>
 
           {/* Filters and Sort */}
-          <div className="flex flex-wrap gap-3 items-center">
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
             {/* Category Filters */}
             <div className="flex flex-wrap gap-2">
               {categories.map((category) => (
                 <button
                   key={category.id}
                   onClick={() => setSelectedCategory(category.id)}
-                  className={`filter-btn ${
-                    selectedCategory === category.id ? 'filter-btn-active' : 'filter-btn-inactive'
+                  className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                    selectedCategory === category.id 
+                      ? 'bg-indigo-600 text-white shadow-lg' 
+                      : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-600 hover:border-indigo-300 dark:hover:border-indigo-500'
                   }`}
                 >
                   {category.name}
@@ -381,12 +380,12 @@ const GoalSetPage = () => {
             </div>
 
             {/* Sort Dropdown */}
-            <div className="flex items-center gap-2 ml-auto">
+            <div className="flex items-center gap-2 sm:ml-auto">
               <Filter size={16} className="text-gray-500" />
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="search-bar w-auto"
+                className="px-4 py-2 border-2 border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 shadow-sm"
               >
                 {sortOptions.map((option) => (
                   <option key={option.value} value={option.value}>

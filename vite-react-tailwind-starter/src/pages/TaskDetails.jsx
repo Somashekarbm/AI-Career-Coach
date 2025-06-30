@@ -15,16 +15,17 @@ import {
   ChevronDown as ChevronDownIcon,
   X,
   FileText,
-  Moon,
-  Sun,
   Target,
   Zap,
   Star,
   Heart,
   Brain,
-  Trophy
+  Trophy,
+  Users,
+  Home
 } from "lucide-react";
 import Footer from "../components/Footer";
+import MenuDropdown from "../components/MenuDropdown";
 import { goalService } from "../services/goalService";
 import { useTheme } from "../context/ThemeContext";
 import toast from "react-hot-toast";
@@ -283,8 +284,19 @@ const TaskDetails = () => {
 
             {/* Navigation */}
             <nav className="flex items-center gap-4">
-              <button className="text-indigo-600 dark:text-indigo-400 font-medium hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors px-4 py-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-700/50">
+              <button 
+                onClick={() => navigate("/landing")}
+                className="text-indigo-600 dark:text-indigo-400 font-medium hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-white/50 dark:hover:bg-gray-700/50"
+              >
+                <Home size={16} />
                 Home
+              </button>
+              <button 
+                onClick={() => navigate("/teams")}
+                className="text-indigo-600 dark:text-indigo-400 font-medium hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors px-4 py-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-700/50 flex items-center gap-2"
+              >
+                <Users size={16} />
+                <span>Teams</span>
               </button>
               <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 bg-white/50 dark:bg-gray-700/50 px-4 py-2 rounded-lg">
                 <TrendingUp size={16} className="text-green-500" />
@@ -295,21 +307,8 @@ const TaskDetails = () => {
                 <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
               </button>
               
-              {/* Theme Switch Button */}
-              <button 
-                onClick={toggleTheme} 
-                className="p-3 hover:bg-white/50 dark:hover:bg-gray-700/50 rounded-xl transition-all duration-300 group"
-              >
-                {isDarkMode ? (
-                  <Sun size={20} className="text-gray-600 dark:text-gray-300 group-hover:text-yellow-500 transition-colors" />
-                ) : (
-                  <Moon size={20} className="text-gray-600 dark:text-gray-300 group-hover:text-indigo-600 transition-colors" />
-                )}
-              </button>
-              
-              <button className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors font-medium px-4 py-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-700/50">
-                Menu
-              </button>
+              {/* Menu Dropdown */}
+              <MenuDropdown />
             </nav>
           </div>
         </div>

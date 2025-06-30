@@ -11,13 +11,13 @@ export const useTheme = () => {
 };
 
 export const ThemeProvider = ({ children }) => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
 
-  // Load saved theme or system default
+  // Load saved theme or default to dark
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const defaultToDark = savedTheme === "dark" || (!savedTheme && prefersDark);
+    const defaultToDark = savedTheme === "dark" || savedTheme === "light" ? savedTheme === "dark" : true;
 
     if (defaultToDark) {
       document.documentElement.classList.add("dark");
