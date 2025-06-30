@@ -25,7 +25,7 @@ public class JwtUtil {
         this.refreshExpirationMs = refreshExpirationMs;
     }
 
-    public String generateToken(Long userId, String email) {
+    public String generateToken(String userId, String email) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
         return Jwts.builder()
@@ -38,7 +38,7 @@ public class JwtUtil {
                 .compact();
     }
 
-    public String generateRefreshToken(Long userId, String email) {
+    public String generateRefreshToken(String userId, String email) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + refreshExpirationMs);
         return Jwts.builder()
@@ -92,10 +92,10 @@ public class JwtUtil {
                 .parseClaimsJws(token).getBody().getSubject();
     }
 
-    public Long getUserIdFromToken(String token) {
+    public String getUserIdFromToken(String token) {
         Object userId = Jwts.parserBuilder().setSigningKey(getSigningKey()).build()
                 .parseClaimsJws(token).getBody().get("userId");
-        return userId instanceof Integer ? ((Integer) userId).longValue() : (Long) userId;
+        return userId instanceof Integer ? ((Integer) userId).toString() : (String) userId;
     }
 
     public Date getTokenExpiration(String token) {

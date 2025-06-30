@@ -6,69 +6,45 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
-@Table(name = "goals")
+@Document(collection = "goals")
 public class Goal {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     @JsonBackReference
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "description", length = 1000)
     private String description;
 
-    @Column(name = "category")
     private String category; // "career", "learning", "health", "personal", "finance"
 
-    @Column(name = "daily_hours")
     private Double dailyHours;
 
-    @Column(name = "deadline")
     private LocalDateTime deadline;
 
-    @Column(name = "progress_percentage", nullable = false)
     private Integer progressPercentage = 0;
 
-    @Column(name = "total_tasks", nullable = false)
     private Integer totalTasks = 0;
 
-    @Column(name = "completed_tasks", nullable = false)
     private Integer completedTasks = 0;
 
-    @Column(name = "status", nullable = false)
     private String status = "active"; // "active", "completed", "paused", "cancelled"
 
-    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "goal", fetch = FetchType.LAZY, cascade = jakarta.persistence.CascadeType.ALL)
     private List<GoalTask> tasks;
 
     // Getters and setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
     
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }

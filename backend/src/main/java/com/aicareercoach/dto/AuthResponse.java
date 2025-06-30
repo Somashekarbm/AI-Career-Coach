@@ -3,14 +3,14 @@ package com.aicareercoach.dto;
 public class AuthResponse {
     private String token;
     private String refreshToken;
-    private Long userId;
+    private String userId;
     private String email;
     private String firstName;
     private String lastName;
 
     public AuthResponse() {}
 
-    public AuthResponse(String token, Long userId, String email, String firstName, String lastName) {
+    public AuthResponse(String token, String userId, String email, String firstName, String lastName) {
         this.token = token;
         this.userId = userId;
         this.email = email;
@@ -18,7 +18,7 @@ public class AuthResponse {
         this.lastName = lastName;
     }
 
-    public AuthResponse(String token, String refreshToken, Long userId, String email, String firstName, String lastName) {
+    public AuthResponse(String token, String refreshToken, String userId, String email, String firstName, String lastName) {
         this.token = token;
         this.refreshToken = refreshToken;
         this.userId = userId;
@@ -43,11 +43,11 @@ public class AuthResponse {
         this.refreshToken = refreshToken;
     }
 
-    public Long getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 

@@ -1,13 +1,13 @@
 package com.aicareercoach.domain;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -17,104 +17,74 @@ import java.util.Set;
  * User entity representing a user of the AI Career Coach platform.
  * Contains user authentication, profile information, and career details.
  */
-@Entity
-@Table(name = "users")
-@EntityListeners(AuditingEntityListener.class)
+@Document(collection = "users")
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     @NotBlank(message = "First name is required")
     @Size(max = 50, message = "First name must be less than 50 characters")
-    @Column(name = "first_name", nullable = false)
     private String firstName;
 
     @NotBlank(message = "Last name is required")
     @Size(max = 50, message = "Last name must be less than 50 characters")
-    @Column(name = "last_name", nullable = false)
     private String lastName;
 
     @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")
-    @Column(name = "email", unique = true, nullable = false)
     private String email;
 
     @NotBlank(message = "Password is required")
     @Size(min = 8, message = "Password must be at least 8 characters long")
-    @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "phone_number")
     private String phoneNumber;
 
-    @Column(name = "date_of_birth")
     private LocalDateTime dateOfBirth;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "gender")
     private Gender gender;
 
-    @Column(name = "profile_picture_url")
     private String profilePictureUrl;
 
-    @Column(name = "bio", length = 1000)
     private String bio;
 
-    @Column(name = "location")
     private String location;
 
-    @Column(name = "timezone")
     private String timezone;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "current_role")
     private JobRole currentRole;
 
-    @Column(name = "years_of_experience")
     private Integer yearsOfExperience;
 
-    @Column(name = "current_company")
     private String currentCompany;
 
-    @Column(name = "current_salary")
     private Double currentSalary;
 
-    @Column(name = "preferred_work_hours_per_day")
     private Integer preferredWorkHoursPerDay;
 
-    @Column(name = "is_active")
     private Boolean isActive = true;
 
-    @Column(name = "email_verified")
     private Boolean emailVerified = false;
 
-    @Column(name = "last_login")
     private LocalDateTime lastLogin;
 
     @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Goal> goals = new HashSet<>();
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Roadmap> roadmaps = new HashSet<>();
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Task> tasks = new HashSet<>();
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<UserSkill> skills = new HashSet<>();
 
     // Constructors
@@ -129,11 +99,11 @@ public class User {
     }
 
     // Getters and Setters
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

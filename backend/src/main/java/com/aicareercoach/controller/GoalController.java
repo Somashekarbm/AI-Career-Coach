@@ -43,7 +43,7 @@ public class GoalController {
         
         // Extract user ID from JWT token
         String jwtToken = token.replace("Bearer ", "");
-        Long userId = jwtUtil.getUserIdFromToken(jwtToken);
+        String userId = jwtUtil.getUserIdFromToken(jwtToken);
         
         List<GoalResponse> goals;
         
@@ -66,11 +66,11 @@ public class GoalController {
 
     @GetMapping("/{id}")
     public ResponseEntity<GoalResponse> getGoalById(
-            @PathVariable Long id,
+            @PathVariable String id,
             @RequestHeader("Authorization") String token) {
         
         String jwtToken = token.replace("Bearer ", "");
-        Long userId = jwtUtil.getUserIdFromToken(jwtToken);
+        String userId = jwtUtil.getUserIdFromToken(jwtToken);
         
         List<GoalResponse> allGoals = goalService.getAllGoalsByUserId(userId);
         GoalResponse goal = allGoals.stream()
@@ -91,7 +91,7 @@ public class GoalController {
             @RequestHeader("Authorization") String token) {
         
         String jwtToken = token.replace("Bearer ", "");
-        Long userId = jwtUtil.getUserIdFromToken(jwtToken);
+        String userId = jwtUtil.getUserIdFromToken(jwtToken);
         
         GoalResponse newGoal = goalService.createGoal(userId, goalRequest);
         return ResponseEntity.ok(newGoal);
@@ -99,12 +99,12 @@ public class GoalController {
 
     @PutMapping("/{id}")
     public ResponseEntity<GoalResponse> updateGoal(
-            @PathVariable Long id,
+            @PathVariable String id,
             @RequestBody GoalRequest goalRequest,
             @RequestHeader("Authorization") String token) {
         
         String jwtToken = token.replace("Bearer ", "");
-        Long userId = jwtUtil.getUserIdFromToken(jwtToken);
+        String userId = jwtUtil.getUserIdFromToken(jwtToken);
         
         GoalResponse updatedGoal = goalService.updateGoal(userId, id, goalRequest);
         return ResponseEntity.ok(updatedGoal);
@@ -112,11 +112,11 @@ public class GoalController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteGoal(
-            @PathVariable Long id,
+            @PathVariable String id,
             @RequestHeader("Authorization") String token) {
         
         String jwtToken = token.replace("Bearer ", "");
-        Long userId = jwtUtil.getUserIdFromToken(jwtToken);
+        String userId = jwtUtil.getUserIdFromToken(jwtToken);
         
         goalService.deleteGoal(userId, id);
         return ResponseEntity.ok().build();
@@ -125,7 +125,7 @@ public class GoalController {
     @GetMapping("/user/name")
     public ResponseEntity<String> getUserName(@RequestHeader("Authorization") String token) {
         String jwtToken = token.replace("Bearer ", "");
-        Long userId = jwtUtil.getUserIdFromToken(jwtToken);
+        String userId = jwtUtil.getUserIdFromToken(jwtToken);
         String userName = goalService.getUserName(userId);
         return ResponseEntity.ok(userName);
     }
@@ -135,7 +135,7 @@ public class GoalController {
     public ResponseEntity<Map<String, Object>> debugUser(@RequestHeader("Authorization") String token) {
         try {
             String jwtToken = token.replace("Bearer ", "");
-            Long userId = jwtUtil.getUserIdFromToken(jwtToken);
+            String userId = jwtUtil.getUserIdFromToken(jwtToken);
             String email = jwtUtil.getEmailFromToken(jwtToken);
             
             Map<String, Object> debugInfo = new HashMap<>();

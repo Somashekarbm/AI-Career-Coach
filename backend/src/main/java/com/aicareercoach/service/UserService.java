@@ -48,7 +48,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public Optional<User> getUserById(Long id) {
+    public Optional<User> getUserById(String id) {
         return userRepository.findById(id);
     }
 
@@ -56,25 +56,25 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
-    public List<Roadmap> getUserRoadmaps(Long userId) {
+    public List<Roadmap> getUserRoadmaps(String userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return roadmapRepository.findByUser(user);
     }
 
-    public List<Task> getUserTasks(Long userId) {
+    public List<Task> getUserTasks(String userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return taskRepository.findByUser(user);
     }
 
-    public Optional<Task> getTaskById(Long userId, Long taskId) {
+    public Optional<Task> getTaskById(String userId, String taskId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return taskRepository.findByIdAndUser(taskId, user);
     }
 
-    public TaskResponse getNextTask(Long userId) {
+    public TaskResponse getNextTask(String userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -110,7 +110,7 @@ public class UserService {
         );
     }
 
-    public void updateMood(Long userId, String mood) {
+    public void updateMood(String userId, String mood) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -125,7 +125,7 @@ public class UserService {
         rescheduleOverdueTasks(userId);
     }
 
-    public void logLifeEvent(Long userId, String event) {
+    public void logLifeEvent(String userId, String event) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -137,7 +137,7 @@ public class UserService {
         lifeEventLogRepository.save(lifeEventLog);
     }
 
-    private void rescheduleOverdueTasks(Long userId) {
+    private void rescheduleOverdueTasks(String userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -150,7 +150,7 @@ public class UserService {
         }
     }
 
-    private String getUserCurrentMood(Long userId) {
+    private String getUserCurrentMood(String userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -163,7 +163,7 @@ public class UserService {
         return recentMoods.get(0).getMood();
     }
 
-    public void completeTask(Long userId, Long taskId) {
+    public void completeTask(String userId, String taskId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -177,7 +177,7 @@ public class UserService {
         taskRepository.save(task);
     }
 
-    public void rescheduleTask(Long userId, Long taskId) {
+    public void rescheduleTask(String userId, String taskId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 

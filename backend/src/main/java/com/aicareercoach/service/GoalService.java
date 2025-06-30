@@ -31,28 +31,28 @@ public class GoalService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<GoalResponse> getAllGoalsByUserId(Long userId) {
+    public List<GoalResponse> getAllGoalsByUserId(String userId) {
         List<Goal> goals = goalRepository.findByUserIdOrderByCreatedAtDesc(userId);
         return goals.stream()
                 .map(this::convertToGoalResponse)
                 .collect(Collectors.toList());
     }
 
-    public List<GoalResponse> getGoalsByCategory(Long userId, String category) {
+    public List<GoalResponse> getGoalsByCategory(String userId, String category) {
         List<Goal> goals = goalRepository.findByUserIdAndCategoryOrderByCreatedAtDesc(userId, category);
         return goals.stream()
                 .map(this::convertToGoalResponse)
                 .collect(Collectors.toList());
     }
 
-    public List<GoalResponse> searchGoals(Long userId, String searchTerm) {
+    public List<GoalResponse> searchGoals(String userId, String searchTerm) {
         List<Goal> goals = goalRepository.findByUserIdAndSearchTerm(userId, searchTerm);
         return goals.stream()
                 .map(this::convertToGoalResponse)
                 .collect(Collectors.toList());
     }
 
-    public List<GoalResponse> getGoalsSorted(Long userId, String sortBy) {
+    public List<GoalResponse> getGoalsSorted(String userId, String sortBy) {
         List<Goal> goals;
         switch (sortBy) {
             case "deadline":
@@ -73,7 +73,7 @@ public class GoalService {
                 .collect(Collectors.toList());
     }
 
-    public List<GoalResponse> getGoalsByCategoryAndSort(Long userId, String category, String sortBy) {
+    public List<GoalResponse> getGoalsByCategoryAndSort(String userId, String category, String sortBy) {
         List<Goal> goals;
         switch (sortBy) {
             case "deadline":
@@ -94,7 +94,7 @@ public class GoalService {
                 .collect(Collectors.toList());
     }
 
-    public GoalResponse createGoal(Long userId, GoalRequest goalRequest) {
+    public GoalResponse createGoal(String userId, GoalRequest goalRequest) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -113,7 +113,7 @@ public class GoalService {
         return convertToGoalResponse(savedGoal);
     }
 
-    public GoalResponse updateGoal(Long userId, Long goalId, GoalRequest goalRequest) {
+    public GoalResponse updateGoal(String userId, String goalId, GoalRequest goalRequest) {
         Goal goal = goalRepository.findByIdAndUserId(goalId, userId)
                 .orElseThrow(() -> new RuntimeException("Goal not found"));
 
@@ -128,14 +128,14 @@ public class GoalService {
         return convertToGoalResponse(updatedGoal);
     }
 
-    public void deleteGoal(Long userId, Long goalId) {
+    public void deleteGoal(String userId, String goalId) {
         Goal goal = goalRepository.findByIdAndUserId(goalId, userId)
                 .orElseThrow(() -> new RuntimeException("Goal not found"));
 
         goalRepository.delete(goal);
     }
 
-    public String getUserName(Long userId) {
+    public String getUserName(String userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         

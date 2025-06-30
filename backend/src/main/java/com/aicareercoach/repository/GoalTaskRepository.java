@@ -2,19 +2,19 @@ package com.aicareercoach.repository;
 
 import java.util.List;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import com.aicareercoach.domain.GoalTask;
 
 @Repository
-public interface GoalTaskRepository extends JpaRepository<GoalTask, Long> {
+public interface GoalTaskRepository extends MongoRepository<GoalTask, String> {
     
-    List<GoalTask> findByGoalIdOrderByCreatedAtAsc(Long goalId);
+    List<GoalTask> findByGoalIdOrderByCreatedAtAsc(String goalId);
     
-    List<GoalTask> findByGoalIdAndCompletedOrderByCreatedAtAsc(Long goalId, Boolean completed);
+    List<GoalTask> findByGoalIdAndCompletedOrderByCreatedAtAsc(String goalId, Boolean completed);
     
-    long countByGoalId(Long goalId);
+    long countByGoalId(String goalId);
     
-    long countByGoalIdAndCompleted(Long goalId, Boolean completed);
+    long countByGoalIdAndCompleted(String goalId, Boolean completed);
 } 

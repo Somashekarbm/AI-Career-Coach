@@ -36,7 +36,7 @@ public class UserController {
 
     @GetMapping("/{userId}")
     @Operation(summary = "Get user profile", description = "Get user profile information")
-    public ResponseEntity<User> getUserProfile(@PathVariable Long userId) {
+    public ResponseEntity<User> getUserProfile(@PathVariable String userId) {
         return userService.getUserById(userId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -45,7 +45,7 @@ public class UserController {
     @PostMapping("/{userId}/mood")
     @Operation(summary = "Update user mood/energy", description = "Log user's current mood/energy level")
     public ResponseEntity<Map<String, String>> updateMood(
-            @PathVariable Long userId,
+            @PathVariable String userId,
             @Valid @RequestBody MoodRequest moodRequest) {
         
         userService.updateMood(userId, moodRequest.getMood());
@@ -60,7 +60,7 @@ public class UserController {
     @PostMapping("/{userId}/life-event")
     @Operation(summary = "Log life event", description = "Log a life event that affects task scheduling")
     public ResponseEntity<Map<String, String>> logLifeEvent(
-            @PathVariable Long userId,
+            @PathVariable String userId,
             @Valid @RequestBody LifeEventRequest lifeEventRequest) {
         
         userService.logLifeEvent(userId, lifeEventRequest.getEvent());
@@ -74,7 +74,7 @@ public class UserController {
 
     @GetMapping("/{userId}/roadmaps")
     @Operation(summary = "Get all user roadmaps", description = "Get all roadmaps for a specific user")
-    public ResponseEntity<List<Roadmap>> getUserRoadmaps(@PathVariable Long userId) {
+    public ResponseEntity<List<Roadmap>> getUserRoadmaps(@PathVariable String userId) {
         List<Roadmap> roadmaps = userService.getUserRoadmaps(userId);
         return ResponseEntity.ok(roadmaps);
     }
@@ -91,7 +91,7 @@ public class UserController {
 
     @GetMapping("/{userId}/tasks")
     @Operation(summary = "Get all user tasks", description = "Get all tasks for a specific user")
-    public ResponseEntity<List<Task>> getUserTasks(@PathVariable Long userId) {
+    public ResponseEntity<List<Task>> getUserTasks(@PathVariable String userId) {
         List<Task> tasks = userService.getUserTasks(userId);
         return ResponseEntity.ok(tasks);
     }
@@ -99,8 +99,8 @@ public class UserController {
     @GetMapping("/{userId}/tasks/{taskId}")
     @Operation(summary = "Get specific task", description = "Get a specific task by ID")
     public ResponseEntity<Task> getTask(
-            @PathVariable Long userId,
-            @PathVariable Long taskId) {
+            @PathVariable String userId,
+            @PathVariable String taskId) {
         
         return userService.getTaskById(userId, taskId)
                 .map(ResponseEntity::ok)
@@ -109,7 +109,7 @@ public class UserController {
 
     @GetMapping("/{userId}/next-task")
     @Operation(summary = "Get next task", description = "Get the next suggested task based on user's mood and progress")
-    public ResponseEntity<TaskResponse> getNextTask(@PathVariable Long userId) {
+    public ResponseEntity<TaskResponse> getNextTask(@PathVariable String userId) {
         TaskResponse task = userService.getNextTask(userId);
         
         if (task == null) {
@@ -122,8 +122,8 @@ public class UserController {
     @PostMapping("/{userId}/tasks/{taskId}/complete")
     @Operation(summary = "Complete task", description = "Mark a task as completed")
     public ResponseEntity<Map<String, String>> completeTask(
-            @PathVariable Long userId,
-            @PathVariable Long taskId) {
+            @PathVariable String userId,
+            @PathVariable String taskId) {
         
         userService.completeTask(userId, taskId);
         
@@ -136,8 +136,8 @@ public class UserController {
     @PutMapping("/{userId}/tasks/{taskId}/reschedule")
     @Operation(summary = "Reschedule task", description = "Reschedule a task based on AI suggestions")
     public ResponseEntity<Map<String, String>> rescheduleTask(
-            @PathVariable Long userId,
-            @PathVariable Long taskId) {
+            @PathVariable String userId,
+            @PathVariable String taskId) {
         
         userService.rescheduleTask(userId, taskId);
         

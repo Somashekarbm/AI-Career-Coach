@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class GoalResponse {
-    private Long id;
+    private String id;
     private String title;
     private String description;
     private String category;
@@ -19,8 +19,8 @@ public class GoalResponse {
     private List<GoalTaskResponse> tasks;
 
     // Getters and setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
     
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }

@@ -72,7 +72,7 @@ public class AuthController {
             }
             
             // Extract user info from refresh token
-            Long userId = jwtUtil.getUserIdFromToken(refreshToken);
+            String userId = jwtUtil.getUserIdFromToken(refreshToken);
             String email = jwtUtil.getEmailFromToken(refreshToken);
             
             // Generate new access token
