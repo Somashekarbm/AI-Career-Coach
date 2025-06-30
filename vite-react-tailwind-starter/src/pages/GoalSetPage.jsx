@@ -432,7 +432,7 @@ const GoalSetPage = () => {
                     <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex-1">
                       {goal.title}
                     </h3>
-                    <span className={`tag ${getCategoryColor(goal.category)} ml-2`}>
+                    <span className={`dark:text-white tag ${getCategoryColor(goal.category)} ml-2`}>
                       {categories.find(cat => cat.id === goal.category)?.name}
                     </span>
                   </div>

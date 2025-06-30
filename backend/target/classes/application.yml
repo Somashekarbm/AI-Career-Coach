@@ -79,4 +79,12 @@ management:
         include: health,info,metrics
   endpoint:
     health:
-      show-details: when-authorized 
+      show-details: when-authorized
+
+# AI Timeline Configuration
+ai:
+  timeline:
+    enabled: false  # Set to true to enable AI timeline features
+
+# OpenAI API key (should be set via environment variable in production)
+OPENAI_API_KEY: "" 
