@@ -9,7 +9,7 @@ const Home = () => {
     <div className="bg-[#121212] text-white">
       <Header showLogout={false} />
       <main>
-        <Hero showGetStarted={true} />
+        <Hero />
         <Features />
       </main>
       <Footer />

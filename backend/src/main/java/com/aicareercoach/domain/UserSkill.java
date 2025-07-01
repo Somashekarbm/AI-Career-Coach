@@ -1,39 +1,31 @@
 package com.aicareercoach.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "user_skills")
+@Document(collection = "userskills")
 public class UserSkill {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     @JsonBackReference
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "skill_name", nullable = false)
     private String skillName;
 
-    @Column(name = "proficiency_level")
     private String proficiencyLevel; // e.g., "beginner", "intermediate", "advanced", "expert"
 
-    @Column(name = "years_of_experience")
     private Integer yearsOfExperience;
 
-    @Column(name = "is_target_skill")
     private Boolean isTargetSkill = false;
 
-    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
     // Getters and setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
     public String getSkillName() { return skillName; }

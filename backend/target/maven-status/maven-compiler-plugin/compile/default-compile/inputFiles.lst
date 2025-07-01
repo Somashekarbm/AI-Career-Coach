@@ -27,3 +27,45 @@ C:\Project\AI-Career-Coach orginal\backend\src\main\java\com\aicareercoach\domai
 C:\Project\AI-Career-Coach orginal\backend\src\main\java\com\aicareercoach\repository\GoalRepository.java
 C:\Project\AI-Career-Coach orginal\backend\src\main\java\com\aicareercoach\controller\UserController.java
 C:\Project\AI-Career-Coach orginal\backend\src\main\java\com\aicareercoach\service\UserService.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\repository\GoalTaskRepository.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\service\AiTimelineService.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\service\UserService.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\domain\UserSkill.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\dto\GoalResponse.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\repository\GoalRepository.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\domain\Goal.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\repository\RoadmapRepository.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\dto\TaskDetailsRequest.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\config\SecurityConfig.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\controller\AuthController.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\repository\TaskRepository.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\repository\MoodLogRepository.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\domain\User.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\dto\TimelineRequest.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\dto\AuthResponse.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\domain\Task.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\dto\AuthRequest.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\dto\GoalTaskResponse.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\domain\MoodLog.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\service\GoalService.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\AiCareerCoachApplication.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\dto\RefreshTokenRequest.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\domain\Roadmap.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\config\DataInitializer.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\repository\LifeEventLogRepository.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\controller\AiTimelineController.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\domain\LifeEventLog.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\repository\UserRepository.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\dto\GoalRequest.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\dto\TimelineResponse.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\dto\TaskResponse.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\domain\JobRole.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\domain\GoalTask.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\config\JwtUtil.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\controller\GoalController.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\dto\LifeEventRequest.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\dto\MoodRequest.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\controller\UserController.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\domain\Gender.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\dto\TaskDetailsResponse.java
+C:\Users\somas\Desktop\AI Career Coach\backend\src\main\java\com\aicareercoach\dto\LoginRequest.java

@@ -2,8 +2,11 @@ com\aicareercoach\repository\GoalRepository.class
 com\aicareercoach\dto\AuthResponse.class
 com\aicareercoach\dto\MoodRequest.class
 com\aicareercoach\domain\User.class
+com\aicareercoach\service\GoalService.class
 com\aicareercoach\dto\AuthRequest.class
+com\aicareercoach\dto\GoalTaskResponse.class
 com\aicareercoach\domain\Gender.class
+com\aicareercoach\dto\RefreshTokenRequest.class
 com\aicareercoach\domain\Roadmap.class
 com\aicareercoach\repository\MoodLogRepository.class
 com\aicareercoach\dto\GoalRequest.class
@@ -11,12 +14,16 @@ com\aicareercoach\repository\RoadmapRepository.class
 com\aicareercoach\repository\UserRepository.class
 com\aicareercoach\domain\MoodLog.class
 com\aicareercoach\dto\LifeEventRequest.class
+com\aicareercoach\domain\GoalTask.class
+com\aicareercoach\repository\GoalTaskRepository.class
 com\aicareercoach\domain\LifeEventLog.class
 com\aicareercoach\domain\Goal.class
 com\aicareercoach\repository\TaskRepository.class
 com\aicareercoach\controller\AuthController.class
+com\aicareercoach\dto\LoginRequest.class
 com\aicareercoach\repository\LifeEventLogRepository.class
 com\aicareercoach\domain\UserSkill.class
+com\aicareercoach\dto\GoalResponse.class
 com\aicareercoach\config\DataInitializer.class
 com\aicareercoach\config\JwtUtil.class
 com\aicareercoach\dto\TaskResponse.class
@@ -24,5 +31,6 @@ com\aicareercoach\config\SecurityConfig.class
 com\aicareercoach\domain\JobRole.class
 com\aicareercoach\AiCareerCoachApplication.class
 com\aicareercoach\service\UserService.class
+com\aicareercoach\controller\GoalController.class
 com\aicareercoach\controller\UserController.class
 com\aicareercoach\domain\Task.class

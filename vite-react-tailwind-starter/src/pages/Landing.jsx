@@ -6,10 +6,10 @@ import Footer from "../components/Footer";
 
 const Landing = () => {
   return (
-    <div className="bg-[#121212] text-white">
-      <Header showLogout={true} />
-      <main>
-        <Hero showCreateGoal={true} />
+    <div className="min-h-screen bg-gray-50 dark:bg-black text-gray-900 dark:text-white">
+      <Header />
+      <main className="flex flex-col">
+        <Hero />
         <Features />
       </main>
       <Footer />

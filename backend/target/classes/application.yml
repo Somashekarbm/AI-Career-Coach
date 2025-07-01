@@ -1,44 +1,9 @@
 spring:
   application:
-    name: ai-career-coach-backend
-  
-  # Database Configuration - Using H2 for development
-  datasource:
-    url: jdbc:h2:mem:ai_career_coach;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    username: sa
-    password: 
-    driver-class-name: org.h2.Driver
-  
-  # JPA Configuration
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
-    show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
-        format_sql: true
-        globally_quoted_identifiers: true
-    defer-datasource-initialization: false
-  
-  # H2 Console (for development)
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
-  
-  # SQL Init - Disabled to prevent table not found errors
-  sql:
-    init:
-      mode: never
-  
-  # Security Configuration
-  security:
-    user:
-      name: admin
-      password: admin
-  
-  # Mail Configuration (for future email notifications)
+    name: aicareercoach
+  data:
+    mongodb:
+      uri: ${MONGODB_URI}
   mail:
     host: smtp.gmail.com
     port: 587
@@ -50,6 +15,8 @@ spring:
           auth: true
           starttls:
             enable: true
+  config:
+    import: optional:file:.env[.properties]
 
 # Server Configuration
 server:
@@ -60,16 +27,15 @@ server:
 # JWT Configuration
 jwt:
   secret: ${JWT_SECRET:your-256-bit-secret-key-here-make-it-long-and-secure}
-  expiration: 86400000 # 24 hours in milliseconds
+  expiration: 3600000 # 1 hour in milliseconds (reduced from 24 hours)
   refresh-expiration: 604800000 # 7 days in milliseconds
+  inactivity-timeout: 1800000 # 30 minutes of inactivity
 
 # Logging Configuration
 logging:
   level:
     com.aicareercoach: DEBUG
     org.springframework.security: DEBUG
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
 
@@ -90,23 +56,16 @@ springdoc:
 
 # Custom Application Properties
 app:
-  # File upload configuration
   file:
     upload-dir: ./uploads
     max-size: 10MB
-  
-  # Pagination defaults
   pagination:
     default-page-size: 20
     max-page-size: 100
-  
-  # Roadmap generation settings
   roadmap:
     default-duration-weeks: 12
     max-tasks-per-day: 5
     buffer-days-percentage: 20
-  
-  # Task management settings
   task:
     default-duration-minutes: 60
     max-daily-hours: 8
@@ -120,4 +79,12 @@ management:
         include: health,info,metrics
   endpoint:
     health:
-      show-details: when-authorized 
+      show-details: when-authorized
+
+# AI Timeline Configuration
+ai:
+  timeline:
+    enabled: false  # Set to true to enable AI timeline features
+
+# OpenAI API key (should be set via environment variable in production)
+OPENAI_API_KEY: "" 
