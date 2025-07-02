@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Menu, Target } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
@@ -9,6 +9,7 @@ import AboutModal from "./AboutModal";
 import ContactModal from "./ContactModal";
 import PrivacyModal from "./PrivacyModal";
 import TermsModal from "./TermsModal";
+import axios from "axios";
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -16,6 +17,22 @@ const Header = () => {
   const navigate = useNavigate();
   const { isDarkMode } = useTheme();
   const isLoggedIn = sessionService.isLoggedIn();
+  const [avatar, setAvatar] = useState(null);
+  const userId = typeof window !== 'undefined' ? localStorage.getItem("userId") : null;
+
+  useEffect(() => {
+    const fetchAvatar = async () => {
+      if (isLoggedIn && userId) {
+        try {
+          const res = await axios.get(`http://localhost:8080/api/v1/users/${userId}/profile`);
+          setAvatar(res.data.avatar || "/image/male1.png");
+        } catch {
+          setAvatar("/image/male1.png");
+        }
+      }
+    };
+    fetchAvatar();
+  }, [isLoggedIn, userId]);
 
   const openModal = (modalType) => {
     setActiveModal(modalType);
@@ -46,7 +63,7 @@ const Header = () => {
 
   return (
     <>
-      <header className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md shadow-lg border-b border-white/20 dark:border-gray-700/50 sticky top-0 z-50">
+      <header className="fixed top-0 left-0 w-full z-50 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md shadow-lg border-b border-white/20 dark:border-gray-700/50">
         <div className="max-w-8xl mx-auto px-8 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
@@ -70,7 +87,19 @@ const Header = () => {
             )}
 
             {/* Menu Dropdown - Only show when logged in */}
-            {isLoggedIn && <MenuDropdown />}
+            {isLoggedIn && (
+              <>
+                {avatar && (
+                  <img
+                    src={avatar.startsWith("/image/") || avatar.startsWith("http") ? avatar : `/image/${avatar}.png`}
+                    alt="avatar"
+                    className="hidden sm:inline w-10 h-10 rounded-full border-2 border-indigo-500 shadow-md mr-2 transition-all duration-200 bg-white object-cover"
+                    style={{ marginRight: 8 }}
+                  />
+                )}
+                <MenuDropdown />
+              </>
+            )}
 
             {!isLoggedIn && (
               <div className="flex gap-4">

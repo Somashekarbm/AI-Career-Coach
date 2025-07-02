@@ -53,8 +53,8 @@ const MenuDropdown = ({ isLoggedIn = true, className = "" }) => {
     }, 1000);
   };
 
-  // Handle edit profile
-  const handleEditProfile = () => {
+  // Handle user profile
+  const handleUserProfile = () => {
     setIsOpen(false);
     navigate('/profile');
   };
@@ -202,11 +202,11 @@ const MenuDropdown = ({ isLoggedIn = true, className = "" }) => {
               </div>
               <div className="space-y-1">
                 <button
-                  onClick={handleEditProfile}
+                  onClick={handleUserProfile}
                   className="w-full flex items-center gap-3 px-3 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-xl transition-all duration-200 group"
                 >
                   <User size={18} className="text-gray-500 dark:text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" />
-                  <span className="font-medium">Edit Profile</span>
+                  <span className="font-medium">User Profile</span>
                 </button>
                 
                 <button

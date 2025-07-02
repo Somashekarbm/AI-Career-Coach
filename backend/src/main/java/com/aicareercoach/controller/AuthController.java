@@ -1,5 +1,8 @@
 package com.aicareercoach.controller;
 
+import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +18,8 @@ import com.aicareercoach.dto.AuthResponse;
 import com.aicareercoach.dto.LoginRequest;
 import com.aicareercoach.dto.RefreshTokenRequest;
 import com.aicareercoach.service.UserService;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseToken;
 
 import jakarta.validation.Valid;
 
@@ -100,6 +105,28 @@ public class AuthController {
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                 .body("Error: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/google-login")
+    public ResponseEntity<?> googleLogin(@RequestBody Map<String, String> body) {
+        try {
+            String idToken = body.get("idToken");
+            FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(idToken);
+            String email = decodedToken.getEmail();
+            String firstName = (String) decodedToken.getClaims().getOrDefault("name", "");
+            String lastName = ""; // Firebase token may not have last name separately
+            // Only allow login if user exists
+            Optional<User> userOpt = userService.getUserByEmail(email);
+            if (userOpt.isEmpty()) {
+                return ResponseEntity.badRequest().body("User not registered. Please register first.");
+            }
+            User user = userOpt.get();
+            String token = jwtUtil.generateToken(user.getId(), user.getEmail());
+            String refreshToken = jwtUtil.generateRefreshToken(user.getId(), user.getEmail());
+            return ResponseEntity.ok(new AuthResponse(token, refreshToken, user.getId(), user.getEmail(), user.getFirstName(), user.getLastName()));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Google login failed: " + e.getMessage());
         }
     }
 } 

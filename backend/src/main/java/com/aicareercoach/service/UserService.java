@@ -1,6 +1,7 @@
 package com.aicareercoach.service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -196,11 +197,13 @@ public class UserService {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new RuntimeException("User with this email already exists");
         }
-
+        // Check if username is unique
+        if (userRepository.findAll().stream().anyMatch(u -> user.getUsername().equals(u.getUsername()))) {
+            throw new RuntimeException("Username already taken");
+        }
         // Encode password
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setCreatedAt(LocalDateTime.now());
-
         return userRepository.save(user);
     }
 
@@ -229,5 +232,99 @@ public class UserService {
             userMap.put("isActive", user.getIsActive());
             return userMap;
         }).collect(Collectors.toList());
+    }
+
+    public User updateUserProfile(String userId, Map<String, Object> updates) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        try {
+            if (updates.containsKey("username")) {
+                String newUsername = (String) updates.get("username");
+                if (!newUsername.equals(user.getUsername()) && userRepository.findAll().stream().anyMatch(u -> newUsername.equals(u.getUsername()))) {
+                    throw new RuntimeException("Username already taken");
+                }
+                user.setUsername(newUsername);
+            }
+            if (updates.containsKey("learningPreferences")) {
+                user.setLearningPreferences((String) updates.get("learningPreferences"));
+            }
+            if (updates.containsKey("avatar")) {
+                user.setAvatar((String) updates.get("avatar"));
+            }
+            if (updates.containsKey("firstName")) {
+                user.setFirstName((String) updates.get("firstName"));
+            }
+            if (updates.containsKey("lastName")) {
+                user.setLastName((String) updates.get("lastName"));
+            }
+            if (updates.containsKey("email")) {
+                String newEmail = (String) updates.get("email");
+                if (!newEmail.equals(user.getEmail()) && userRepository.findByEmail(newEmail).isPresent()) {
+                    throw new RuntimeException("Email already in use");
+                }
+                user.setEmail(newEmail);
+            }
+            if (updates.containsKey("password")) {
+                String newPassword = (String) updates.get("password");
+                if (newPassword != null && !newPassword.isBlank()) {
+                    user.setPassword(passwordEncoder.encode(newPassword));
+                }
+            }
+            if (updates.containsKey("dateOfBirth")) {
+                Object dobObj = updates.get("dateOfBirth");
+                if (dobObj instanceof String) {
+                    String dobStr = (String) dobObj;
+                    try {
+                        if (dobStr.length() == 10) { // yyyy-MM-dd
+                            user.setDateOfBirth(java.time.LocalDate.parse(dobStr, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay());
+                        } else {
+                            user.setDateOfBirth(java.time.LocalDateTime.parse(dobStr));
+                        }
+                    } catch (Exception e) {
+                        System.err.println("Failed to parse dateOfBirth: " + dobStr);
+                        e.printStackTrace();
+                    }
+                }
+            }
+            if (updates.containsKey("currentRole")) {
+                String roleStr = (String) updates.get("currentRole");
+                try {
+                    user.setCurrentRole(com.aicareercoach.domain.JobRole.valueOf(roleStr));
+                } catch (Exception e) {
+                    // If not in enum, store as OTHER and optionally log or store custom
+                    user.setCurrentRole(com.aicareercoach.domain.JobRole.OTHER);
+                    // Optionally, store custom role in learningPreferences or another field
+                    user.setLearningPreferences((user.getLearningPreferences() == null ? "" : user.getLearningPreferences() + "; ") + "CustomRole: " + roleStr);
+                }
+            }
+            if (updates.containsKey("preferredWorkHoursPerDay")) {
+                Object hoursObj = updates.get("preferredWorkHoursPerDay");
+                if (hoursObj instanceof Number) {
+                    user.setPreferredWorkHoursPerDay(((Number) hoursObj).intValue());
+                } else if (hoursObj instanceof String) {
+                    try {
+                        user.setPreferredWorkHoursPerDay(Integer.parseInt((String) hoursObj));
+                    } catch (NumberFormatException ignored) {}
+                }
+            }
+            if (updates.containsKey("age")) {
+                Object ageObj = updates.get("age");
+                int age = 0;
+                if (ageObj instanceof Number) {
+                    age = ((Number) ageObj).intValue();
+                } else if (ageObj instanceof String) {
+                    try {
+                        age = Integer.parseInt((String) ageObj);
+                    } catch (NumberFormatException ignored) {}
+                }
+                if (age < 10) throw new RuntimeException("Age must be at least 10 years");
+                user.setAge(age);
+            }
+            return userRepository.save(user);
+        } catch (Exception e) {
+            System.err.println("Error updating user profile: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Failed to update user profile: " + e.getMessage());
+        }
     }
 } 

@@ -29,8 +29,8 @@ public class JwtUtil {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
         return Jwts.builder()
-                .setSubject(email)
-                .claim("userId", userId)
+                .setSubject(userId)
+                .claim("email", email)
                 .claim("type", "access")
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
@@ -42,8 +42,8 @@ public class JwtUtil {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + refreshExpirationMs);
         return Jwts.builder()
-                .setSubject(email)
-                .claim("userId", userId)
+                .setSubject(userId)
+                .claim("email", email)
                 .claim("type", "refresh")
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)

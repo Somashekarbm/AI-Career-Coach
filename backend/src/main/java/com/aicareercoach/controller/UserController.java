@@ -146,4 +146,21 @@ public class UserController {
         
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/{userId}/profile")
+    public ResponseEntity<User> getUserProfileDetails(@PathVariable String userId) {
+        return userService.getUserById(userId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{userId}/profile")
+    public ResponseEntity<User> updateUserProfile(@PathVariable String userId, @RequestBody Map<String, Object> updates) {
+        try {
+            User updated = userService.updateUserProfile(userId, updates);
+            return ResponseEntity.ok(updated);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 } 

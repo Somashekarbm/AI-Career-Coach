@@ -55,4 +55,12 @@ frontend/dist/
 
 # Docker
 **/.docker/
-**/docker-compose.override.yml 
+**/docker-compose.override.yml
+
+# Firebase/Firestore credentials
+firebase-service-account.json
+*.firebase-service-account.json
+*.firebase-adminsdk-*.json
+.env
+backend/src/main/resources/firebase-service-account.json
+backend/src/main/resources/*.json 

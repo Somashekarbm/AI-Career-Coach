@@ -1,17 +1,21 @@
 package com.aicareercoach.domain;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 /**
  * User entity representing a user of the AI Career Coach platform.
@@ -27,8 +31,6 @@ public class User {
     @Size(max = 50, message = "First name must be less than 50 characters")
     private String firstName;
 
-    @NotBlank(message = "Last name is required")
-    @Size(max = 50, message = "Last name must be less than 50 characters")
     private String lastName;
 
     @NotBlank(message = "Email is required")
@@ -86,6 +88,18 @@ public class User {
 
     @JsonManagedReference
     private Set<UserSkill> skills = new HashSet<>();
+
+    @NotBlank(message = "Username is required")
+    @Size(max = 30, message = "Username must be less than 30 characters")
+    private String username;
+
+    private String learningPreferences;
+
+    private String avatar; // stores avatar identifier or URL
+
+    @NotNull(message = "Age is required")
+    @Min(value = 10, message = "Age must be at least 10 years")
+    private Integer age;
 
     // Constructors
     public User() {
@@ -305,6 +319,38 @@ public class User {
 
     public void setSkills(Set<UserSkill> skills) {
         this.skills = skills;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getLearningPreferences() {
+        return learningPreferences;
+    }
+
+    public void setLearningPreferences(String learningPreferences) {
+        this.learningPreferences = learningPreferences;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
     }
 
     // Helper methods

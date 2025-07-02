@@ -13,19 +13,10 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import SessionTimeoutWarning from "./components/SessionTimeoutWarning";
 import { ThemeProvider } from "./context/ThemeContext";
 import sessionService from "./services/sessionService";
+import UserProfile from "./pages/UserProfile";
 import "./index.css";
 
-// Placeholder components for menu pages
-const Profile = () => (
-  <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 min-h-screen flex flex-col">
-    <div className="flex-1 flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Profile Page</h1>
-        <p className="text-gray-600 dark:text-gray-400">Coming soon!</p>
-      </div>
-    </div>
-  </div>
-);
+
 
 const Settings = () => (
   <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 min-h-screen flex flex-col">
@@ -161,7 +152,7 @@ function App() {
             path="/profile"
             element={
               <ProtectedRoute>
-                <Profile />
+                <UserProfile />
               </ProtectedRoute>
             }
           />
