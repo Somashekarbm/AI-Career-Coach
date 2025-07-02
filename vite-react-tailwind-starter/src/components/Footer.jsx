@@ -3,6 +3,7 @@ import Modal from "./Modal";
 import PrivacyModal from "./PrivacyModal";
 import TermsModal from "./TermsModal";
 import ContactModal from "./ContactModal";
+import AboutModal from "./AboutModal";
 
 const Footer = () => {
   const [activeModal, setActiveModal] = useState(null);
@@ -30,6 +31,11 @@ const Footer = () => {
       title: "Contact Us",
       component: <ContactModal />,
       maxWidth: "max-w-4xl"
+    },
+    about: {
+      title: "About GoalForge AI",
+      component: <AboutModal />,
+      maxWidth: "max-w-4xl"
     }
   };
 
@@ -42,6 +48,20 @@ const Footer = () => {
           </p>
           <div className="mt-2 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 text-xs sm:text-sm text-gray-400 dark:text-gray-500">
             <button 
+              onClick={() => openModal('about')}
+              className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+            >
+              About
+            </button>
+            <span className="hidden sm:inline">•</span>
+            <button 
+              onClick={() => openModal('contact')}
+              className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+            >
+              Contact Us
+            </button>
+            <span className="hidden sm:inline">•</span>
+            <button 
               onClick={() => openModal('privacy')}
               className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
             >
@@ -53,13 +73,6 @@ const Footer = () => {
               className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
             >
               Terms of Service
-            </button>
-            <span className="hidden sm:inline">•</span>
-            <button 
-              onClick={() => openModal('contact')}
-              className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-            >
-              Contact Us
             </button>
           </div>
         </div>

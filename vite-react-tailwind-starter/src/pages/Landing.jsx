@@ -6,7 +6,7 @@ import Footer from "../components/Footer";
 
 const Landing = () => {
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-black text-gray-900 dark:text-white">
+    <div className="min-h-screen bg-white dark:bg-gradient-to-br from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <Header />
       <main className="flex flex-col">
         <Hero />

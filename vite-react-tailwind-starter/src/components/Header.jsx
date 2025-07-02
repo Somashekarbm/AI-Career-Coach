@@ -32,11 +32,6 @@ const Header = () => {
       component: <AboutModal />,
       maxWidth: "max-w-4xl"
     },
-    contact: {
-      title: "Contact Us",
-      component: <ContactModal />,
-      maxWidth: "max-w-4xl"
-    },
     privacy: {
       title: "Privacy Policy",
       component: <PrivacyModal />,
@@ -52,7 +47,7 @@ const Header = () => {
   return (
     <>
       <header className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md shadow-lg border-b border-white/20 dark:border-gray-700/50 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        <div className="max-w-8xl mx-auto px-8 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
               <Target size={24} className="text-white" />
@@ -64,20 +59,8 @@ const Header = () => {
 
           {/* Desktop Nav */}
           <nav className="hidden lg:flex gap-6 items-center text-gray-800 dark:text-white">
-            <button 
-              onClick={() => openModal('about')}
-              className="text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors px-4 py-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-700/50"
-            >
-              About
-            </button>
-            <button 
-              onClick={() => openModal('contact')}
-              className="text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors px-4 py-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-700/50"
-            >
-              Contact
-            </button>
-            
             {isLoggedIn && (
+              
               <button 
                 onClick={() => navigate("/goal-set")} 
                 className="text-indigo-600 dark:text-indigo-400 font-medium hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors px-4 py-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-700/50"
@@ -120,19 +103,6 @@ const Header = () => {
         {isMobileMenuOpen && (
           <div className="lg:hidden bg-white/95 dark:bg-gray-800/95 backdrop-blur-md border-t border-white/20 dark:border-gray-700/50 animate-slide-down">
             <div className="px-6 py-4 space-y-3">
-              <button 
-                onClick={() => openModal('about')}
-                className="block w-full text-left py-3 px-4 text-gray-800 dark:text-white hover:bg-white/50 dark:hover:bg-gray-700/50 rounded-lg transition-all duration-200"
-              >
-                About
-              </button>
-              <button 
-                onClick={() => openModal('contact')}
-                className="block w-full text-left py-3 px-4 text-gray-800 dark:text-white hover:bg-white/50 dark:hover:bg-gray-700/50 rounded-lg transition-all duration-200"
-              >
-                Contact
-              </button>
-              
               {isLoggedIn && (
                 <button 
                   onClick={() => navigate("/goal-set")} 
@@ -186,5 +156,3 @@ const Header = () => {
 };
 
 export default Header;
-
-
