@@ -9,6 +9,6 @@ import java.util.List;
 
 @Repository
 public interface LifeEventLogRepository extends MongoRepository<LifeEventLog, String> {
-    List<LifeEventLog> findByUserOrderByCreatedAtDesc(User user);
-    LifeEventLog findFirstByUserOrderByCreatedAtDesc(User user);
+    List<LifeEventLog> findByUserIdOrderByCreatedAtDesc(String userId);
+    LifeEventLog findFirstByUserIdOrderByCreatedAtDesc(String userId);
 } 

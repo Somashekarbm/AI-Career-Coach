@@ -147,7 +147,7 @@ const Hero = () => {
   <div className="absolute inset-0 bg-black dark:opacity-20 opacity-5"></div>
 
   <div className="relative max-w-7xl mx-auto text-center w-full z-10">
-    <h1 className="text-sm sm:text-base md:text-lg text-black dark:text-white/80 font-inter mb-4 sm:mb-6">
+    <h1 className="text-sm sm:text-base md:text-lg text-black dark:text-white/80 font-inter mb-2 sm:mb-6">
       AI-powered tools to launch and elevate your career
     </h1>
 

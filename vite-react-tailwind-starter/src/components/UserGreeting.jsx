@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { goalService } from '../services/goalService';
+import sessionService from '../services/sessionService';
 
 const UserGreeting = () => {
   const [userName, setUserName] = useState('');
@@ -8,6 +9,11 @@ const UserGreeting = () => {
 
   useEffect(() => {
     const fetchUserName = async () => {
+      if (!sessionService.isLoggedIn()) {
+        setUserName('User');
+        setLoading(false);
+        return;
+      }
       try {
         const name = await goalService.getUserName();
         setUserName(name);

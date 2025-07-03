@@ -12,10 +12,9 @@ public class Task {
     private String id;
 
     @JsonBackReference
-    private User user;
-
-    @JsonBackReference
     private Roadmap roadmap;
+
+    private String userId;
 
     private String title;
 
@@ -38,10 +37,10 @@ public class Task {
     // Getters and setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
     public Roadmap getRoadmap() { return roadmap; }
     public void setRoadmap(Roadmap roadmap) { this.roadmap = roadmap; }
+    public String getUserId() { return userId; }
+    public void setUserId(String userId) { this.userId = userId; }
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
     public String getDescription() { return description; }

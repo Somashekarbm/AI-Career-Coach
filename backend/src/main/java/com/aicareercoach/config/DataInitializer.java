@@ -116,7 +116,7 @@ public class DataInitializer {
 
             // Create test goal
             Goal goal = new Goal();
-            goal.setUser(user);
+            goal.setUserId(user.getId());
             goal.setTitle("Become Full Stack Developer");
             goal.setDescription("Transition from tech support to full stack development");
             goal.setCategory("career");
@@ -131,7 +131,7 @@ public class DataInitializer {
 
             // Create test roadmap
             Roadmap roadmap = new Roadmap();
-            roadmap.setUser(user);
+            roadmap.setUserId(user.getId());
             roadmap.setGoal(goal);
             roadmap.setTitle("Roadmap for Become Full Stack Developer");
             roadmap.setDescription("Personalized learning path to achieve your goal");
@@ -157,7 +157,7 @@ public class DataInitializer {
 
     private void createTask(Roadmap roadmap, String title, String description, int priority, LocalDateTime dueDate) {
         Task task = new Task();
-        task.setUser(roadmap.getUser());
+        task.setUserId(roadmap.getUserId());
         task.setRoadmap(roadmap);
         task.setTitle(title);
         task.setDescription(description);

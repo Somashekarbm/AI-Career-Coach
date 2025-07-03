@@ -43,8 +43,6 @@ public class User {
 
     private String phoneNumber;
 
-    private LocalDateTime dateOfBirth;
-
     private Gender gender;
 
     private String profilePictureUrl;
@@ -159,14 +157,6 @@ public class User {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
-    }
-
-    public LocalDateTime getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public void setDateOfBirth(LocalDateTime dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
     }
 
     public Gender getGender() {
@@ -356,42 +346,34 @@ public class User {
     // Helper methods
     public void addGoal(Goal goal) {
         goals.add(goal);
-        goal.setUser(this);
     }
 
     public void removeGoal(Goal goal) {
         goals.remove(goal);
-        goal.setUser(null);
     }
 
     public void addRoadmap(Roadmap roadmap) {
         roadmaps.add(roadmap);
-        roadmap.setUser(this);
     }
 
     public void removeRoadmap(Roadmap roadmap) {
         roadmaps.remove(roadmap);
-        roadmap.setUser(null);
     }
 
     public void addTask(Task task) {
         tasks.add(task);
-        task.setUser(this);
     }
 
     public void removeTask(Task task) {
         tasks.remove(task);
-        task.setUser(null);
     }
 
     public void addSkill(UserSkill skill) {
         skills.add(skill);
-        skill.setUser(this);
     }
 
     public void removeSkill(UserSkill skill) {
         skills.remove(skill);
-        skill.setUser(null);
     }
 
     @Override

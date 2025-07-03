@@ -12,10 +12,10 @@ import com.aicareercoach.domain.User;
 
 @Repository
 public interface TaskRepository extends MongoRepository<Task, String> {
-    List<Task> findByUserOrderByDueDateAsc(User user);
-    List<Task> findByUserAndStatus(User user, String status);
-    List<Task> findByUserAndStatusAndDueDateBefore(User user, String status, LocalDateTime date);
-    List<Task> findByUserAndRoadmapIdOrderByPriorityDesc(User user, String roadmapId);
-    List<Task> findByUser(User user);
-    Optional<Task> findByIdAndUser(String id, User user);
+    List<Task> findByUserIdOrderByDueDateAsc(String userId);
+    List<Task> findByUserIdAndStatus(String userId, String status);
+    List<Task> findByUserIdAndStatusAndDueDateBefore(String userId, String status, LocalDateTime date);
+    List<Task> findByUserIdAndRoadmapIdOrderByPriorityDesc(String userId, String roadmapId);
+    List<Task> findByUserId(String userId);
+    Optional<Task> findByIdAndUserId(String id, String userId);
 } 

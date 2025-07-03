@@ -60,19 +60,19 @@ public class UserService {
     public List<Roadmap> getUserRoadmaps(String userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return roadmapRepository.findByUser(user);
+        return roadmapRepository.findByUserId(user.getId());
     }
 
     public List<Task> getUserTasks(String userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return taskRepository.findByUser(user);
+        return taskRepository.findByUserId(user.getId());
     }
 
     public Optional<Task> getTaskById(String userId, String taskId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return taskRepository.findByIdAndUser(taskId, user);
+        return taskRepository.findByIdAndUserId(taskId, user.getId());
     }
 
     public TaskResponse getNextTask(String userId) {
@@ -83,7 +83,7 @@ public class UserService {
         String userMood = getUserCurrentMood(userId);
         
         // Get pending tasks
-        List<Task> pendingTasks = taskRepository.findByUserAndStatus(user, "pending");
+        List<Task> pendingTasks = taskRepository.findByUserIdAndStatus(user.getId(), "pending");
         
         if (pendingTasks.isEmpty()) {
             return null;
@@ -142,7 +142,7 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        List<Task> overdueTasks = taskRepository.findByUserAndStatus(user, "overdue");
+        List<Task> overdueTasks = taskRepository.findByUserIdAndStatus(user.getId(), "overdue");
         
         for (Task task : overdueTasks) {
             task.setDueDate(LocalDateTime.now().plusDays(1));
@@ -155,7 +155,7 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        List<MoodLog> recentMoods = moodLogRepository.findByUserOrderByCreatedAtDesc(user);
+        List<MoodLog> recentMoods = moodLogRepository.findByUserIdOrderByCreatedAtDesc(user.getId());
         
         if (recentMoods.isEmpty()) {
             return "neutral";
@@ -168,7 +168,7 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Task task = taskRepository.findByIdAndUser(taskId, user)
+        Task task = taskRepository.findByIdAndUserId(taskId, user.getId())
                 .orElseThrow(() -> new RuntimeException("Task not found"));
 
         task.setStatus("completed");
@@ -182,7 +182,7 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Task task = taskRepository.findByIdAndUser(taskId, user)
+        Task task = taskRepository.findByIdAndUserId(taskId, user.getId())
                 .orElseThrow(() -> new RuntimeException("Task not found"));
 
         task.setDueDate(LocalDateTime.now().plusDays(1));
@@ -271,22 +271,6 @@ public class UserService {
                 String newPassword = (String) updates.get("password");
                 if (newPassword != null && !newPassword.isBlank()) {
                     user.setPassword(passwordEncoder.encode(newPassword));
-                }
-            }
-            if (updates.containsKey("dateOfBirth")) {
-                Object dobObj = updates.get("dateOfBirth");
-                if (dobObj instanceof String) {
-                    String dobStr = (String) dobObj;
-                    try {
-                        if (dobStr.length() == 10) { // yyyy-MM-dd
-                            user.setDateOfBirth(java.time.LocalDate.parse(dobStr, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay());
-                        } else {
-                            user.setDateOfBirth(java.time.LocalDateTime.parse(dobStr));
-                        }
-                    } catch (Exception e) {
-                        System.err.println("Failed to parse dateOfBirth: " + dobStr);
-                        e.printStackTrace();
-                    }
                 }
             }
             if (updates.containsKey("currentRole")) {

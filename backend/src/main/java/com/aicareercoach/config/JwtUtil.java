@@ -93,9 +93,8 @@ public class JwtUtil {
     }
 
     public String getUserIdFromToken(String token) {
-        Object userId = Jwts.parserBuilder().setSigningKey(getSigningKey()).build()
-                .parseClaimsJws(token).getBody().get("userId");
-        return userId instanceof Integer ? ((Integer) userId).toString() : (String) userId;
+        return Jwts.parserBuilder().setSigningKey(getSigningKey()).build()
+                .parseClaimsJws(token).getBody().getSubject();
     }
 
     public Date getTokenExpiration(String token) {

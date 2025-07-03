@@ -10,6 +10,6 @@ import com.aicareercoach.domain.User;
 
 @Repository
 public interface MoodLogRepository extends MongoRepository<MoodLog, String> {
-    List<MoodLog> findByUserOrderByCreatedAtDesc(User user);
-    MoodLog findFirstByUserOrderByCreatedAtDesc(User user);
+    List<MoodLog> findByUserIdOrderByCreatedAtDesc(String userId);
+    MoodLog findFirstByUserIdOrderByCreatedAtDesc(String userId);
 } 

@@ -46,7 +46,8 @@ public class GoalService {
     }
 
     public List<GoalResponse> searchGoals(String userId, String searchTerm) {
-        List<Goal> goals = goalRepository.findByUserIdAndSearchTerm(userId, searchTerm);
+        List<Goal> goals = goalRepository.findByUserIdAndTitleContainingIgnoreCaseOrUserIdAndDescriptionContainingIgnoreCase(
+            userId, searchTerm, userId, searchTerm);
         return goals.stream()
                 .map(this::convertToGoalResponse)
                 .collect(Collectors.toList());
@@ -62,7 +63,7 @@ public class GoalService {
                 goals = goalRepository.findByUserIdOrderByDailyHoursDesc(userId);
                 break;
             case "progress":
-                goals = goalRepository.findByUserIdOrderByProgressDesc(userId);
+                goals = goalRepository.findByUserIdOrderByProgressPercentageDesc(userId);
                 break;
             default: // createdAt
                 goals = goalRepository.findByUserIdOrderByCreatedAtDesc(userId);
@@ -83,7 +84,7 @@ public class GoalService {
                 goals = goalRepository.findByUserIdAndCategoryOrderByDailyHoursDesc(userId, category);
                 break;
             case "progress":
-                goals = goalRepository.findByUserIdAndCategoryOrderByProgressDesc(userId, category);
+                goals = goalRepository.findByUserIdAndCategoryOrderByProgressPercentageDesc(userId, category);
                 break;
             default: // createdAt
                 goals = goalRepository.findByUserIdAndCategoryOrderByCreatedAtDesc(userId, category);
@@ -95,11 +96,9 @@ public class GoalService {
     }
 
     public GoalResponse createGoal(String userId, GoalRequest goalRequest) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
+        // No need to fetch User object
         Goal goal = new Goal();
-        goal.setUser(user);
+        goal.setUserId(userId);
         goal.setTitle(goalRequest.getTitle());
         goal.setDescription(goalRequest.getDescription());
         goal.setCategory(goalRequest.getCategory());
@@ -136,10 +135,12 @@ public class GoalService {
     }
 
     public String getUserName(String userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("User ID must not be null. Are you missing a valid Authorization header?");
+        }
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        
-        return user.getFirstName() + " " + user.getLastName();
+        return user.getUsername();
     }
 
     // Debug method to get all users (for development only)

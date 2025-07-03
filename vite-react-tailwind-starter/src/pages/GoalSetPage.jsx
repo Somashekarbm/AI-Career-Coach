@@ -65,6 +65,8 @@ const GoalSetPage = () => {
     { value: "progress", label: "Progress" }
   ];
 
+  const isProUser = false; // Set to true for pro/paid users
+
   // Fetch goals from backend
   const fetchGoals = async () => {
     try {
@@ -479,8 +481,15 @@ const GoalSetPage = () => {
                     View Tasks
                   </button>
                   <button
-                    onClick={() => handleUpdate(goal)}
+                    onClick={() => {
+                      if (!isProUser) {
+                        toast.error('Updating goals is only available for Pro/Paid members!');
+                        return;
+                      }
+                      handleUpdate(goal);
+                    }}
                     className="btn-hover bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-2 rounded-lg"
+                    disabled={!isProUser}
                   >
                     <Edit size={16} />
                   </button>

@@ -12,9 +12,6 @@ public class Roadmap {
     private String id;
 
     @JsonBackReference
-    private User user;
-
-    @JsonBackReference
     private Goal goal;
 
     private String title;
@@ -27,11 +24,11 @@ public class Roadmap {
 
     private LocalDateTime updatedAt;
 
+    private String userId;
+
     // Getters and setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
     public Goal getGoal() { return goal; }
     public void setGoal(Goal goal) { this.goal = goal; }
     public String getTitle() { return title; }
@@ -44,4 +41,6 @@ public class Roadmap {
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+    public String getUserId() { return userId; }
+    public void setUserId(String userId) { this.userId = userId; }
 } 

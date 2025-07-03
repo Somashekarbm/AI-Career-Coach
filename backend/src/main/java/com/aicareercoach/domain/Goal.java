@@ -14,8 +14,7 @@ public class Goal {
     @Id
     private String id;
 
-    @JsonBackReference
-    private User user;
+    private String userId;
 
     private String title;
 
@@ -46,8 +45,8 @@ public class Goal {
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
     
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
+    public String getUserId() { return userId; }
+    public void setUserId(String userId) { this.userId = userId; }
     
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }

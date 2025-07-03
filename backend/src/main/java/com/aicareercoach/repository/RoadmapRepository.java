@@ -10,7 +10,7 @@ import com.aicareercoach.domain.User;
 
 @Repository
 public interface RoadmapRepository extends MongoRepository<Roadmap, String> {
-    List<Roadmap> findByUserOrderByCreatedAtDesc(User user);
-    List<Roadmap> findByUserAndGoalId(User user, String goalId);
-    List<Roadmap> findByUser(User user);
+    List<Roadmap> findByUserIdOrderByCreatedAtDesc(String userId);
+    List<Roadmap> findByUserIdAndGoalId(String userId, String goalId);
+    List<Roadmap> findByUserId(String userId);
 } 
