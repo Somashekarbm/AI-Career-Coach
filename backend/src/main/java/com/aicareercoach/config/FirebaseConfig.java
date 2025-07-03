@@ -12,10 +12,10 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 
 @Configuration
-public class FirebaseConfig {
+public class FirebaseConfig { 
     @PostConstruct
     public void init() throws IOException {
-        InputStream serviceAccount = getClass().getClassLoader().getResourceAsStream("goalforge-ai-55567-firebase-adminsdk-fbsvc-ef1f51d7c3.json");
+        InputStream serviceAccount = getClass().getClassLoader().getResourceAsStream("goalforge-ai-55567-firebase-adminsdk-fbsvc-6dac744fb7.json");
 
         FirebaseOptions options = new FirebaseOptions.Builder()
             .setCredentials(GoogleCredentials.fromStream(serviceAccount))

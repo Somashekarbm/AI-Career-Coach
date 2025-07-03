@@ -57,10 +57,6 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
-    public Optional<User> getUserByUsername(String username) {
-        return userRepository.findByUsername(username);
-    }
-
     public List<Roadmap> getUserRoadmaps(String userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -201,14 +197,15 @@ public class UserService {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new RuntimeException("User with this email already exists");
         }
-        // Check if username is unique (only if username is not null)
-        if (user.getUsername() != null && userRepository.findByUsername(user.getUsername()).isPresent()) {
-            throw new RuntimeException("Username already taken");
+        // Check if username is unique
+        if (user.getUsername() == null || user.getUsername().isBlank() ||
+            userRepository.findAll().stream()
+                .filter(u -> u.getUsername() != null)
+                .anyMatch(u -> user.getUsername().equals(u.getUsername()))) {
+            throw new RuntimeException("Username already taken or invalid");
         }
-        // Encode password (only if password is not empty)
-        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-        }
+        // Encode password
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setCreatedAt(LocalDateTime.now());
         return userRepository.save(user);
     }

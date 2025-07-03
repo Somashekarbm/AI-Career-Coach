@@ -3,10 +3,10 @@
 *.jar
 *.war
 *.ear
-
+/target/
 # Maven
 /logs/
-/target/
+
 !.mvn/wrapper/maven-wrapper.jar
 
 # Gradle

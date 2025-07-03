@@ -152,23 +152,9 @@ public class AuthController {
             user.setFirstName(firstName != null ? firstName : "");
             user.setLastName(lastName != null ? lastName : "");
             user.setPassword(""); // No password for Google users
-            
-            // Generate username from email
-            String baseUsername = email.split("@")[0];
-            String username = baseUsername;
-            int suffix = 1;
-            
-            // Check if username exists and add suffix if needed
-            while (userService.getUserByUsername(username).isPresent()) {
-                username = baseUsername + suffix;
-                suffix++;
-            }
+            // Set username as email prefix
+            String username = email != null ? email.split("@")[0] : "googleuser";
             user.setUsername(username);
-            
-            // Set default values for required fields
-            user.setAge(25); // Default age
-            user.setIsActive(true);
-            user.setEmailVerified(true); // Google users are already verified
             
             User savedUser = userService.registerUser(user);
             String token = jwtUtil.generateToken(savedUser.getId(), savedUser.getEmail());
