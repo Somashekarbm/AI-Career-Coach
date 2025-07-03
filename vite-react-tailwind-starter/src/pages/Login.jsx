@@ -48,11 +48,13 @@ const Login = () => {
         navigate("/landing");
       }, 1000);
     } catch (error) {
-      setLoading(false);
+      console.error('Google login error:', error);
       if (error.code === "auth/popup-closed-by-user") {
         toast.error("Google sign-in was cancelled.");
+      } else if (error.response?.data) {
+        toast.error(error.response.data);
       } else {
-        toast.error("Google login failed.");
+        toast.error("Google login failed. Please try again.");
       }
     } finally {
       setLoading(false);

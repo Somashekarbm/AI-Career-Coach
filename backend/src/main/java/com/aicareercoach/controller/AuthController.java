@@ -129,4 +129,54 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Google login failed: " + e.getMessage());
         }
     }
+
+    @PostMapping("/google-register")
+    public ResponseEntity<?> googleRegister(@RequestBody Map<String, Object> body) {
+        try {
+            String idToken = (String) body.get("idToken");
+            String firstName = (String) body.get("firstName");
+            String lastName = (String) body.get("lastName");
+            
+            FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(idToken);
+            String email = decodedToken.getEmail();
+            
+            // Check if user already exists
+            Optional<User> existingUser = userService.getUserByEmail(email);
+            if (existingUser.isPresent()) {
+                return ResponseEntity.badRequest().body("User already exists. Please login instead.");
+            }
+            
+            // Create new user
+            User user = new User();
+            user.setEmail(email);
+            user.setFirstName(firstName != null ? firstName : "");
+            user.setLastName(lastName != null ? lastName : "");
+            user.setPassword(""); // No password for Google users
+            
+            // Generate username from email
+            String baseUsername = email.split("@")[0];
+            String username = baseUsername;
+            int suffix = 1;
+            
+            // Check if username exists and add suffix if needed
+            while (userService.getUserByUsername(username).isPresent()) {
+                username = baseUsername + suffix;
+                suffix++;
+            }
+            user.setUsername(username);
+            
+            // Set default values for required fields
+            user.setAge(25); // Default age
+            user.setIsActive(true);
+            user.setEmailVerified(true); // Google users are already verified
+            
+            User savedUser = userService.registerUser(user);
+            String token = jwtUtil.generateToken(savedUser.getId(), savedUser.getEmail());
+            String refreshToken = jwtUtil.generateRefreshToken(savedUser.getId(), savedUser.getEmail());
+            
+            return ResponseEntity.ok(new AuthResponse(token, refreshToken, savedUser.getId(), savedUser.getEmail(), savedUser.getFirstName(), savedUser.getLastName()));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Google registration failed: " + e.getMessage());
+        }
+    }
 } 

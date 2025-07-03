@@ -42,17 +42,26 @@ const Register = () => {
     try {
       const result = await signInWithPopup(auth, provider);
       const idToken = await result.user.getIdToken();
-      await sessionService.loginWithGoogle(idToken);
+      
+      // Extract user info from Google result
+      const userData = {
+        firstName: result.user.displayName?.split(' ')[0] || '',
+        lastName: result.user.displayName?.split(' ').slice(1).join(' ') || ''
+      };
+      
+      await sessionService.registerWithGoogle(idToken, userData);
       toast.success("Registered with Google!");
       setTimeout(() => {
         navigate("/landing");
       }, 1000);
     } catch (error) {
-      setLoading(false);
+      console.error('Google registration error:', error);
       if (error.code === "auth/popup-closed-by-user") {
         toast.error("Google sign-in was cancelled.");
+      } else if (error.response?.data) {
+        toast.error(error.response.data);
       } else {
-        toast.error("Google registration failed.");
+        toast.error("Google registration failed. Please try again.");
       }
     } finally {
       setLoading(false);

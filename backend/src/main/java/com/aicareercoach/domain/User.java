@@ -14,7 +14,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 /**
@@ -89,7 +88,6 @@ public class User {
     @JsonManagedReference
     private Set<UserSkill> skills = new HashSet<>();
 
-    @NotBlank(message = "Username is required")
     @Size(max = 30, message = "Username must be less than 30 characters")
     private String username;
 
@@ -97,7 +95,6 @@ public class User {
 
     private String avatar; // stores avatar identifier or URL
 
-    @NotNull(message = "Age is required")
     @Min(value = 10, message = "Age must be at least 10 years")
     private Integer age;
 

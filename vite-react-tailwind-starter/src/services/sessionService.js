@@ -262,6 +262,23 @@ class SessionService {
     }
   }
 
+  // Register with Google
+  async registerWithGoogle(idToken, userData) {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/auth/google-register`, {
+        idToken,
+        ...userData
+      });
+      const { token, refreshToken } = response.data;
+      Cookies.set('token', token, { expires: 1 });
+      Cookies.set('refreshToken', refreshToken, { expires: 7 });
+      this.setupTokenRefresh();
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   // Get current user ID from JWT
   getCurrentUserId() {
     const token = Cookies.get('token');
