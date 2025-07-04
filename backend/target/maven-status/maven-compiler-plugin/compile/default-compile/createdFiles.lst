@@ -42,6 +42,7 @@ com\aicareercoach\dto\TimelineResponse.class
 com\aicareercoach\dto\TaskDetailsResponse$TimeRemaining.class
 com\aicareercoach\config\JwtUtil.class
 com\aicareercoach\dto\TaskResponse.class
+com\aicareercoach\service\HardcodedTemplateService.class
 com\aicareercoach\config\SecurityConfig.class
 com\aicareercoach\AiCareerCoachApplication.class
 com\aicareercoach\service\UserService.class

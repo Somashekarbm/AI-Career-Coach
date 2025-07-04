@@ -1,6 +1,7 @@
 package com.aicareercoach.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class GoalTaskResponse {
     private String id;
@@ -11,6 +12,7 @@ public class GoalTaskResponse {
     private Integer priority;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private List<Boolean> subtaskStatus;
 
     // Getters and setters
     public String getId() { return id; }
@@ -36,4 +38,7 @@ public class GoalTaskResponse {
     
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    public List<Boolean> getSubtaskStatus() { return subtaskStatus; }
+    public void setSubtaskStatus(List<Boolean> subtaskStatus) { this.subtaskStatus = subtaskStatus; }
 } 

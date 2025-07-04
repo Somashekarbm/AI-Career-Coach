@@ -1,6 +1,7 @@
 package com.aicareercoach.domain;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -9,6 +10,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class GoalTask {
     @Id
     private String id;
+
+    private String goalId;
 
     private Goal goal;
 
@@ -26,9 +29,14 @@ public class GoalTask {
 
     private LocalDateTime updatedAt;
 
+    private List<Boolean> subtaskStatus;
+
     // Getters and setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
+    
+    public String getGoalId() { return goalId; }
+    public void setGoalId(String goalId) { this.goalId = goalId; }
     
     public Goal getGoal() { return goal; }
     public void setGoal(Goal goal) { this.goal = goal; }
@@ -53,4 +61,7 @@ public class GoalTask {
     
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    public List<Boolean> getSubtaskStatus() { return subtaskStatus; }
+    public void setSubtaskStatus(List<Boolean> subtaskStatus) { this.subtaskStatus = subtaskStatus; }
 } 

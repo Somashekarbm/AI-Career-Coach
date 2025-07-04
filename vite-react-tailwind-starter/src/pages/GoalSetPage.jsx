@@ -422,11 +422,12 @@ const GoalSetPage = () => {
             {goals.map((goal, index) => (
               <div
                 key={goal.id}
-                className="goal-card bg-white/80 dark:bg-gray-800/80 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 animate-fade-in-up shadow-soft"
+                className="goal-card bg-white/80 dark:bg-gray-800/80 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 animate-fade-in-up shadow-soft cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-105"
                 style={{
                   animationDelay: `${index * 150}ms`,
                   animationFillMode: 'both'
                 }}
+                onClick={() => handleViewTasks(goal.id)}
               >
                 {/* Goal Header */}
                 <div className="mb-4">
@@ -472,7 +473,7 @@ const GoalSetPage = () => {
                 <TaskPreview tasks={goal.tasks} maxTasks={3} />
 
                 {/* Action Buttons */}
-                <div className="flex gap-2 mt-6">
+                <div className="flex gap-2 mt-6" onClick={(e) => e.stopPropagation()}>
                   <button
                     onClick={() => handleViewTasks(goal.id)}
                     className="btn-hover flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm flex items-center justify-center gap-1"

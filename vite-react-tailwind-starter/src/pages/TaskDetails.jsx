@@ -44,8 +44,9 @@ const TaskDetails = () => {
   const navigate = useNavigate();
   const { isDarkMode, toggleTheme } = useTheme();
   const [goal, setGoal] = useState(null);
+  const [allTasks, setAllTasks] = useState([]);
   const [currentDay, setCurrentDay] = useState(1);
-  const [totalDays, setTotalDays] = useState(30);
+  const [totalDays, setTotalDays] = useState(0);
   const [loading, setLoading] = useState(true);
   const [autoSave, setAutoSave] = useState(true);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
@@ -61,33 +62,10 @@ const TaskDetails = () => {
   const lifeEventDropdownRef = useRef(null);
   const noteInputRef = useRef(null);
   
-  // Task states - now organized by day
-  const [tasksByDay, setTasksByDay] = useState({
-    1: [
-      { id: 1, name: "Learn React Basics", completed: true, points: 100, estimatedTime: "2h", timeSpent: 120 },
-      { id: 2, name: "Complete JSX Tutorial", completed: true, points: 150, estimatedTime: "1.5h", timeSpent: 90 },
-      { id: 3, name: "Build Simple Component", completed: false, points: 200, estimatedTime: "3h", timeSpent: 0 }
-    ],
-    2: [
-      { id: 4, name: "State Management", completed: false, points: 120, estimatedTime: "2.5h", timeSpent: 0 },
-      { id: 5, name: "Props and Components", completed: false, points: 180, estimatedTime: "2h", timeSpent: 0 },
-      { id: 6, name: "Event Handling", completed: false, points: 160, estimatedTime: "1.5h", timeSpent: 0 }
-    ],
-    3: [
-      { id: 7, name: "Hooks Introduction", completed: false, points: 140, estimatedTime: "2h", timeSpent: 0 },
-      { id: 8, name: "useState Practice", completed: false, points: 170, estimatedTime: "2.5h", timeSpent: 0 },
-      { id: 9, name: "useEffect Examples", completed: false, points: 190, estimatedTime: "2h", timeSpent: 0 }
-    ]
-  });
-  
   // Day-specific data
-  const [dayData, setDayData] = useState({
-    1: { mood: "", lifeEvent: "", note: "" },
-    2: { mood: "", lifeEvent: "", note: "" },
-    3: { mood: "", lifeEvent: "", note: "" }
-  });
+  const [dayData, setDayData] = useState({});
   
-  const [totalPoints, setTotalPoints] = useState(450);
+  const [totalPoints, setTotalPoints] = useState(0);
   const [overallProgress, setOverallProgress] = useState(0);
 
   const moodOptions = [
@@ -102,13 +80,29 @@ const TaskDetails = () => {
     { value: "others", label: "Others", emoji: "📝", color: "from-gray-500 to-slate-600" }
   ];
 
+  // Helper to parse subtasks from description (if present)
+  const parseSubtasks = (description) => {
+    // Example: "Subtasks: ["Step 1", "Step 2"]" in description
+    try {
+      const match = description.match(/Subtasks:\s*(\[.*\])/);
+      if (match) {
+        return JSON.parse(match[1]);
+      }
+    } catch (e) {}
+    return null;
+  };
+
   useEffect(() => {
     fetchGoalDetails();
   }, [goalId]);
 
+  // Progress calculation (updates on allTasks change)
   useEffect(() => {
-    calculateOverallProgress();
-  }, [tasksByDay, currentDay]);
+    if (!allTasks.length) return;
+    const completedTasks = allTasks.filter(task => task.completed).length;
+    const progress = (completedTasks / allTasks.length) * 100;
+    setOverallProgress(progress);
+  }, [allTasks]);
 
   // Timer effect
   useEffect(() => {
@@ -141,59 +135,109 @@ const TaskDetails = () => {
     };
   }, []);
 
+  // Update fetchGoalDetails to fix totalDays calculation
   const fetchGoalDetails = async () => {
     try {
       setLoading(true);
-      // TODO: Replace with actual API call
-      const goalData = {
-        id: goalId,
-        title: "Learn React and Build Portfolio",
-        deadline: "2025-03-15T00:00:00Z",
-        totalDays: 30,
-        currentDay: 1
-      };
+      const goalData = await goalService.getGoalById(goalId);
       setGoal(goalData);
-      setTotalDays(goalData.totalDays);
-      setCurrentDay(goalData.currentDay);
+      
+      if (goalData.tasks && goalData.tasks.length > 0) {
+        setAllTasks(goalData.tasks);
+        // Find the earliest and latest dueDate among all tasks
+        const sortedTasks = [...goalData.tasks].sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+        const startDate = new Date(sortedTasks[0].dueDate);
+        const endDate = new Date(sortedTasks[sortedTasks.length - 1].dueDate);
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(0, 0, 0, 0);
+        const diffTime = endDate.getTime() - startDate.getTime();
+        const days = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        setTotalDays(days);
+        // Find today's task index (1-based)
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const todayTaskIndex = sortedTasks.findIndex(task => {
+          const taskDate = new Date(task.dueDate);
+          taskDate.setHours(0, 0, 0, 0);
+          return taskDate.getTime() === today.getTime();
+        });
+        setCurrentDay(todayTaskIndex >= 0 ? todayTaskIndex + 1 : 1);
+      } else {
+        setTotalDays(0);
+        setCurrentDay(1);
+      }
+      setOverallProgress(goalData.progressPercentage || 0);
     } catch (error) {
       console.error('Error fetching goal details:', error);
       toast.error('Failed to load goal details');
+      navigate('/goals');
     } finally {
       setLoading(false);
     }
   };
 
-  const calculateOverallProgress = () => {
-    let totalCompleted = 0;
-    let totalTasks = 0;
-    
-    Object.values(tasksByDay).forEach(dayTasks => {
-      dayTasks.forEach(task => {
-        totalTasks++;
-        if (task.completed) totalCompleted++;
-      });
-    });
-    
-    const progress = totalTasks > 0 ? (totalCompleted / totalTasks) * 100 : 0;
-    setOverallProgress(progress);
-  };
-
-  const handleTaskToggle = (taskId) => {
-    setTasksByDay(prev => ({
-      ...prev,
-      [currentDay]: prev[currentDay].map(task => 
-        task.id === taskId 
-          ? { ...task, completed: !task.completed }
-          : task
-      )
+  // Handle subtask toggle
+  const handleSubtaskToggle = async (taskId, subtaskIdx) => {
+    let newStatusArray = [];
+    setAllTasks(prev => prev.map(task => {
+      if (task.id !== taskId) return task;
+      let subtasks = parseSubtasks(task.description) || [];
+      if (!task.subtaskStatus) {
+        // Initialize subtaskStatus if not present
+        task.subtaskStatus = Array(subtasks.length).fill(false);
+      }
+      const newStatus = [...task.subtaskStatus];
+      newStatus[subtaskIdx] = !newStatus[subtaskIdx];
+      newStatusArray = newStatus;
+      // If all subtasks complete, mark task as complete
+      const allComplete = newStatus.every(Boolean);
+      return {
+        ...task,
+        subtaskStatus: newStatus,
+        completed: allComplete
+      };
     }));
-    
-    if (autoSave) {
-      setTimeout(() => {
-        toast.success('Progress auto-saved!');
-      }, 500);
+    // Persist to backend
+    try {
+      await goalService.updateSubtaskStatus(goalId, taskId, newStatusArray);
+      toast.success('Checkpoint updated!');
+    } catch (error) {
+      toast.error('Failed to update checkpoint');
+      // Optionally, re-sync if backend fails
+      await fetchGoalDetails();
     }
   };
+
+  // 2. Optimistic UI update and backend persistence for task completion
+  const handleTaskToggle = async (taskId) => {
+    // Optimistically update UI
+    setAllTasks(prev =>
+      prev.map(task =>
+        task.id === taskId ? { ...task, completed: !task.completed } : task
+      )
+    );
+    try {
+      // Call backend to persist
+      await goalService.completeTask(goalId, taskId);
+      toast.success('Task updated successfully!');
+    } catch (error) {
+      toast.error('Failed to update task');
+      // Optionally, re-sync if backend fails
+      await fetchGoalDetails();
+    }
+  };
+
+  // 3. Subtask (checkpoint) persistence requires backend support
+  // To persist subtask completion, you need to:
+  // - Extend the GoalTask model in the backend to store subtaskStatus (array of booleans)
+  // - Add an endpoint to update subtaskStatus for a task
+  // - Update the frontend to call this endpoint in handleSubtaskToggle
+  // (Current implementation only persists main task completion)
+
+  // 4. MongoDB index suggestions (add these to your backend setup):
+  // db.goaltasks.createIndex({ goalId: 1 })
+  // db.goaltasks.createIndex({ userId: 1 })
+  // db.goaltasks.createIndex({ dueDate: 1 })
 
   const handleUpdate = () => {
     const currentDayData = dayData[currentDay] || { mood: "", lifeEvent: "", note: "" };
@@ -213,7 +257,7 @@ const TaskDetails = () => {
   };
 
   const handleComplete = () => {
-    const currentDayTasks = tasksByDay[currentDay] || [];
+    const currentDayTasks = getCurrentDayTasks();
     const allCompleted = currentDayTasks.every(task => task.completed);
     
     if (!allCompleted) {
@@ -245,6 +289,27 @@ const TaskDetails = () => {
     }));
   };
 
+  const getCurrentDayTasks = () => {
+    if (currentDay <= 0 || allTasks.length === 0) return [];
+
+    // Find the earliest dueDate among all tasks (start date)
+    const sortedTasks = [...allTasks].sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+    const startDate = new Date(sortedTasks[0].dueDate);
+    startDate.setHours(0, 0, 0, 0);
+
+    // Calculate the date for the selected day
+    const selectedDate = new Date(startDate);
+    selectedDate.setDate(startDate.getDate() + (currentDay - 1));
+    selectedDate.setHours(0, 0, 0, 0);
+
+    // Return all tasks whose dueDate matches the selected date (ignoring time)
+    return allTasks.filter(task => {
+      const taskDate = new Date(task.dueDate);
+      taskDate.setHours(0, 0, 0, 0);
+      return taskDate.getTime() === selectedDate.getTime();
+    });
+  };
+
   const calculateTimeRemaining = () => {
     if (!goal?.deadline) return { days: 0, hours: 0 };
     
@@ -267,8 +332,17 @@ const TaskDetails = () => {
     return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
   const timeRemaining = calculateTimeRemaining();
-  const currentDayTasks = tasksByDay[currentDay] || [];
+  const currentDayTasks = getCurrentDayTasks();
   const currentDayData = dayData[currentDay] || { mood: "", lifeEvent: "", note: "" };
 
   if (loading) {
@@ -287,6 +361,24 @@ const TaskDetails = () => {
     );
   }
 
+  if (!goal) {
+    return (
+      <div className="bg-gray-50 dark:bg-gray-900 min-h-screen">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Goal Not Found</h1>
+            <button
+              onClick={() => navigate('/goals')}
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+            >
+              Back to Goals
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-gray-50 dark:bg-gray-900 min-h-screen">
       {/* Header */}
@@ -295,7 +387,7 @@ const TaskDetails = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button
-                onClick={() => navigate(-1)}
+                onClick={() => navigate('/goals')}
                 className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
               >
                 <ArrowLeft size={20} className="text-gray-600 dark:text-gray-400" />
@@ -325,7 +417,7 @@ const TaskDetails = () => {
               </button>
               <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded-lg">
                 <TrendingUp size={16} className="text-green-500" />
-                <span className="font-medium">{totalPoints} Points</span>
+                <span className="font-medium">{goal.completedTasks || 0} / {goal.totalTasks || 0} Tasks</span>
               </div>
               <MenuDropdown />
             </div>
@@ -347,9 +439,14 @@ const TaskDetails = () => {
                   </div>
                   <div>
                     <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                      {goal?.title}
+                      {goal.title}
                     </h2>
-                    <p className="text-gray-600 dark:text-gray-400">Day {currentDay} of {totalDays}</p>
+                    <p className="text-gray-600 dark:text-gray-400">
+                      {totalDays > 0 ? `Day ${currentDay} of ${totalDays}` : 'No tasks available'}
+                    </p>
+                    {goal.description && (
+                      <p className="text-gray-600 dark:text-gray-400 mt-2">{goal.description}</p>
+                    )}
                   </div>
                 </div>
                 <div className="text-right">
@@ -380,10 +477,26 @@ const TaskDetails = () => {
                   </div>
                   Today's Tasks
                 </h3>
-                <div className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-lg">
-                  <Activity size={16} />
-                  <span className="font-medium">Active</span>
-                </div>
+                
+                {/* Debug button to generate tasks */}
+                {currentDayTasks.length === 0 && (
+                  <button
+                    onClick={async () => {
+                      try {
+                        const result = await goalService.generateTasks(goalId);
+                        toast.success(result);
+                        // Refresh the page data
+                        await fetchGoalDetails();
+                      } catch (error) {
+                        console.error('Error generating tasks:', error);
+                        toast.error('Failed to generate tasks');
+                      }
+                    }}
+                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors"
+                  >
+                    Generate Tasks (Debug)
+                  </button>
+                )}
               </div>
 
               {/* Task Controls */}
@@ -494,49 +607,63 @@ const TaskDetails = () => {
 
               {/* Task List */}
               <div className="space-y-4">
-                {currentDayTasks.map((task, index) => (
-                  <div key={task.id} className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-6 border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 group">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-lg group-hover:scale-110 transition-transform">
-                        {String.fromCharCode(65 + index)}
-                      </div>
-                      
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
-                          {task.name}
-                        </h4>
-                        <div className="flex items-center gap-4 mt-2">
-                          <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
-                            <Trophy size={14} className="text-yellow-500" />
-                            <span>{task.points} points</span>
-                          </div>
-                          <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
-                            <Clock size={14} className="text-blue-500" />
-                            <span>{task.estimatedTime}</span>
+                {currentDayTasks.length > 0 ? (
+                  currentDayTasks.map((task, index) => (
+                    <div key={task.id} className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-6 border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 group">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-lg group-hover:scale-110 transition-transform">
+                          {String.fromCharCode(65 + index)}
+                        </div>
+                        
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                            {task.title}
+                          </h4>
+                          <p className="text-gray-600 dark:text-gray-400 mt-1">
+                            {task.description}
+                          </p>
+                          <div className="flex items-center gap-4 mt-2">
+                            <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
+                              <Calendar size={14} className="text-blue-500" />
+                              <span>{formatDate(task.dueDate)}</span>
+                            </div>
+                            <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
+                              <Trophy size={14} className="text-yellow-500" />
+                              <span>Priority: {task.priority === 3 ? 'High' : task.priority === 2 ? 'Medium' : 'Low'}</span>
+                            </div>
                           </div>
                         </div>
+                        
+                        <button
+                          onClick={() => handleTaskToggle(task.id)}
+                          className="p-3 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-xl transition-all duration-200 group-hover:scale-110"
+                        >
+                          {task.completed ? (
+                            <CheckCircle size={24} className="text-green-500" />
+                          ) : (
+                            <Circle size={24} className="text-gray-400 group-hover:text-indigo-500 transition-colors" />
+                          )}
+                        </button>
                       </div>
-                      
-                      <button
-                        onClick={() => handleTaskToggle(task.id)}
-                        className="p-3 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-xl transition-all duration-200 group-hover:scale-110"
-                      >
-                        {task.completed ? (
-                          <CheckCircle size={24} className="text-green-500" />
-                        ) : (
-                          <Circle size={24} className="text-gray-400 group-hover:text-indigo-500 transition-colors" />
-                        )}
-                      </button>
                     </div>
+                  ))
+                ) : (
+                  <div className="text-center py-12">
+                    <Target className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">No Tasks for Today</h3>
+                    <p className="text-gray-500 dark:text-gray-400">
+                      {totalDays > 0 ? 'You\'re all caught up! Check back tomorrow for your next tasks.' : 'No tasks have been generated for this goal yet.'}
+                    </p>
                   </div>
-                ))}
+                )}
               </div>
 
               {/* Action Buttons */}
               <div className="flex gap-4 mt-8">
                 <button 
                   onClick={handleComplete}
-                  className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center gap-3"
+                  disabled={currentDayTasks.length === 0 || !currentDayTasks.every(task => task.completed)}
+                  className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 disabled:from-gray-400 disabled:to-gray-500 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none disabled:cursor-not-allowed flex items-center justify-center gap-3"
                 >
                   <Trophy size={20} />
                   Complete Day

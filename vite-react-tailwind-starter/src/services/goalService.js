@@ -57,6 +57,21 @@ export const goalService = {
     }
   },
 
+  // Manually generate tasks for a goal (for debugging)
+  async generateTasks(goalId) {
+    try {
+      const response = await sessionService.makeAuthenticatedRequest({
+        method: 'POST',
+        url: `${API_BASE_URL}/goals/${goalId}/generate-tasks`,
+      });
+      
+      return response.data;
+    } catch (error) {
+      console.error('Error generating tasks:', error);
+      throw error;
+    }
+  },
+
   // Update an existing goal
   async updateGoal(id, goalData) {
     try {
@@ -99,6 +114,51 @@ export const goalService = {
       return response.data;
     } catch (error) {
       console.error('Error fetching user name:', error);
+      throw error;
+    }
+  },
+
+  // Get today's task for a specific goal
+  async getTodaysTask(goalId) {
+    try {
+      const response = await sessionService.makeAuthenticatedRequest({
+        method: 'GET',
+        url: `${API_BASE_URL}/goals/${goalId}/today-task`,
+      });
+      
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching today\'s task:', error);
+      throw error;
+    }
+  },
+
+  // Mark a task as completed
+  async completeTask(goalId, taskId) {
+    try {
+      const response = await sessionService.makeAuthenticatedRequest({
+        method: 'PUT',
+        url: `${API_BASE_URL}/goals/${goalId}/tasks/${taskId}/complete`,
+      });
+      
+      return response.data;
+    } catch (error) {
+      console.error('Error completing task:', error);
+      throw error;
+    }
+  },
+
+  // Update subtask (checkpoint) completion status for a task
+  async updateSubtaskStatus(goalId, taskId, subtaskStatus) {
+    try {
+      const response = await sessionService.makeAuthenticatedRequest({
+        method: 'PUT',
+        url: `${API_BASE_URL}/goals/${goalId}/tasks/${taskId}/subtasks`,
+        data: subtaskStatus,
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error updating subtask status:', error);
       throw error;
     }
   }

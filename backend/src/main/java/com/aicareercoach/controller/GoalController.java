@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,9 +20,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aicareercoach.config.JwtUtil;
+import com.aicareercoach.domain.Goal;
+import com.aicareercoach.domain.GoalTask;
 import com.aicareercoach.dto.GoalRequest;
 import com.aicareercoach.dto.GoalResponse;
+import com.aicareercoach.dto.GoalTaskResponse;
+import com.aicareercoach.repository.GoalTaskRepository;
 import com.aicareercoach.service.GoalService;
+import com.aicareercoach.service.HardcodedTemplateService;
 
 @RestController
 @RequestMapping("/goals")
@@ -122,6 +128,48 @@ public class GoalController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/{goalId}/today-task")
+    public ResponseEntity<GoalTaskResponse> getTodaysTask(
+            @PathVariable String goalId,
+            @RequestHeader("Authorization") String token) {
+        
+        String jwtToken = token.replace("Bearer ", "");
+        String userId = jwtUtil.getUserIdFromToken(jwtToken);
+        
+        GoalTaskResponse todaysTask = goalService.getTodaysTask(userId, goalId);
+        
+        if (todaysTask == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        return ResponseEntity.ok(todaysTask);
+    }
+
+    @PutMapping("/{goalId}/tasks/{taskId}/complete")
+    public ResponseEntity<GoalTaskResponse> markTaskAsCompleted(
+            @PathVariable String goalId,
+            @PathVariable String taskId,
+            @RequestHeader("Authorization") String token) {
+        
+        String jwtToken = token.replace("Bearer ", "");
+        String userId = jwtUtil.getUserIdFromToken(jwtToken);
+        
+        GoalTaskResponse completedTask = goalService.markTaskAsCompleted(userId, goalId, taskId);
+        return ResponseEntity.ok(completedTask);
+    }
+
+    @PutMapping("/{goalId}/tasks/{taskId}/subtasks")
+    public ResponseEntity<GoalTaskResponse> updateSubtaskStatus(
+    @PathVariable String goalId,
+    @PathVariable String taskId,
+    @RequestBody List<Boolean> subtaskStatus,
+    @RequestHeader("Authorization") String token) {
+    String jwtToken = token.replace("Bearer ", "");
+    String userId = jwtUtil.getUserIdFromToken(jwtToken);
+    GoalTaskResponse updatedTask = goalService.updateSubtaskStatus(userId, goalId, taskId, subtaskStatus);
+    return ResponseEntity.ok(updatedTask);
+}
+
     @GetMapping("/user/name")
     public ResponseEntity<String> getUserName(@RequestHeader("Authorization") String token) {
         String jwtToken = token.replace("Bearer ", "");
@@ -161,6 +209,43 @@ public class GoalController {
             Map<String, Object> error = new HashMap<>();
             error.put("error", e.getMessage());
             return ResponseEntity.badRequest().body(List.of(error));
+        }
+    }
+
+    @Autowired
+    private HardcodedTemplateService templateService;
+
+    @Autowired
+    private GoalTaskRepository goalTaskRepository;
+
+    @PostMapping("/{goalId}/generate-tasks")
+    public ResponseEntity<String> generateTasksForGoal(@PathVariable String goalId, @RequestHeader("Authorization") String token) {
+        try {
+            String jwtToken = token.replace("Bearer ", "");
+            String userId = jwtUtil.getUserIdFromToken(jwtToken);
+            
+            // Get the goal using internal method
+            Goal goal = goalService.getGoalByIdInternal(goalId, userId);
+            
+            // Generate tasks for the goal
+            List<GoalTask> tasks = templateService.generateTasksForGoal(goal);
+            System.out.println("Generated " + tasks.size() + " tasks for goal: " + goal.getTitle());
+            
+            for (GoalTask task : tasks) {
+                try {
+                    GoalTask savedTask = goalTaskRepository.save(task);
+                    System.out.println("Saved task: " + savedTask.getTitle() + " for date: " + savedTask.getDueDate());
+                } catch (Exception e) {
+                    System.err.println("Error saving task: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+            
+            return ResponseEntity.ok("Generated " + tasks.size() + " tasks for goal: " + goal.getTitle());
+        } catch (Exception e) {
+            System.err.println("Error generating tasks: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
         }
     }
 } 

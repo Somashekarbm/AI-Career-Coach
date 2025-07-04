@@ -132,6 +132,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/tasks/:goalId"
             element={
