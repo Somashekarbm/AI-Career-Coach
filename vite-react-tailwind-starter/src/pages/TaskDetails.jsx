@@ -31,7 +31,11 @@ import {
   CheckSquare,
   Play,
   Pause,
-  RotateCcw
+  RotateCcw,
+  ArrowUp,
+  ArrowDown,
+  Trash2,
+  Edit3
 } from "lucide-react";
 import Footer from "../components/Footer";
 import MenuDropdown from "../components/MenuDropdown";
@@ -67,6 +71,16 @@ const TaskDetails = () => {
   
   const [totalPoints, setTotalPoints] = useState(0);
   const [overallProgress, setOverallProgress] = useState(0);
+  const [todaysTaskCount, setTodaysTaskCount] = useState(0);
+
+  // Add state for editing checkpoints and notes
+  const [editingCheckpoint, setEditingCheckpoint] = useState({ taskId: null, idx: null });
+  const [checkpointEditValue, setCheckpointEditValue] = useState("");
+  const [addingCheckpoint, setAddingCheckpoint] = useState({ taskId: null, value: "" });
+  const [editingCheckpointNote, setEditingCheckpointNote] = useState({ taskId: null, idx: null });
+  const [checkpointNoteEditValue, setCheckpointNoteEditValue] = useState("");
+  const [editingTaskNote, setEditingTaskNote] = useState({ taskId: null });
+  const [taskNoteEditValue, setTaskNoteEditValue] = useState("");
 
   const moodOptions = [
     { value: "motivated", label: "Motivated", emoji: "💪", color: "from-emerald-500 to-green-600" },
@@ -114,6 +128,18 @@ const TaskDetails = () => {
     }
     return () => clearInterval(interval);
   }, [isTimerRunning]);
+
+  // Add useEffect to recalculate today's task count whenever allTasks changes
+  useEffect(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const count = allTasks.filter(task => {
+      const taskDate = new Date(task.dueDate);
+      taskDate.setHours(0, 0, 0, 0);
+      return taskDate.getTime() === today.getTime();
+    }).length;
+    setTodaysTaskCount(count);
+  }, [allTasks]);
 
   // Click outside handler for dropdowns
   useEffect(() => {
@@ -344,6 +370,109 @@ const TaskDetails = () => {
   const timeRemaining = calculateTimeRemaining();
   const currentDayTasks = getCurrentDayTasks();
   const currentDayData = dayData[currentDay] || { mood: "", lifeEvent: "", note: "" };
+
+  // Handler to start editing a checkpoint
+  const startEditCheckpoint = (taskId, idx, value) => {
+    setEditingCheckpoint({ taskId, idx });
+    setCheckpointEditValue(value);
+  };
+
+  // Handler to save edited checkpoint
+  const saveEditCheckpoint = async (task, idx) => {
+    const newCheckpoints = [...(task.checkpoints || [])];
+    newCheckpoints[idx] = checkpointEditValue;
+    try {
+      await goalService.updateCheckpoints(goalId, task.id, newCheckpoints);
+      await fetchGoalDetails();
+      toast.success("Checkpoint updated!");
+    } catch {
+      toast.error("Failed to update checkpoint");
+    }
+    setEditingCheckpoint({ taskId: null, idx: null });
+    setCheckpointEditValue("");
+  };
+
+  // Handler to remove a checkpoint
+  const removeCheckpoint = async (task, idx) => {
+    const newCheckpoints = [...(task.checkpoints || [])];
+    newCheckpoints.splice(idx, 1);
+    try {
+      await goalService.updateCheckpoints(goalId, task.id, newCheckpoints);
+      await fetchGoalDetails();
+      toast.success("Checkpoint removed!");
+    } catch {
+      toast.error("Failed to remove checkpoint");
+    }
+  };
+
+  // Handler to add a checkpoint
+  const addCheckpoint = async (task) => {
+    if (!addingCheckpoint.value.trim()) return;
+    const newCheckpoints = [...(task.checkpoints || []), addingCheckpoint.value.trim()];
+    try {
+      await goalService.updateCheckpoints(goalId, task.id, newCheckpoints);
+      await fetchGoalDetails();
+      toast.success("Checkpoint added!");
+    } catch {
+      toast.error("Failed to add checkpoint");
+    }
+    setAddingCheckpoint({ taskId: null, value: "" });
+  };
+
+  // Handler to reorder checkpoints
+  const moveCheckpoint = async (task, idx, direction) => {
+    const newCheckpoints = [...(task.checkpoints || [])];
+    const targetIdx = idx + direction;
+    if (targetIdx < 0 || targetIdx >= newCheckpoints.length) return;
+    [newCheckpoints[idx], newCheckpoints[targetIdx]] = [newCheckpoints[targetIdx], newCheckpoints[idx]];
+    try {
+      await goalService.updateCheckpoints(goalId, task.id, newCheckpoints);
+      await fetchGoalDetails();
+      toast.success("Checkpoint reordered!");
+    } catch {
+      toast.error("Failed to reorder checkpoint");
+    }
+  };
+
+  // Handler to start editing a checkpoint note
+  const startEditCheckpointNote = (taskId, idx, value) => {
+    setEditingCheckpointNote({ taskId, idx });
+    setCheckpointNoteEditValue(value);
+  };
+
+  // Handler to save edited checkpoint note
+  const saveEditCheckpointNote = async (task, idx) => {
+    const newNotes = [...(task.checkpointNotes || [])];
+    newNotes[idx] = checkpointNoteEditValue;
+    try {
+      await goalService.updateCheckpointNotes(goalId, task.id, newNotes);
+      await fetchGoalDetails();
+      toast.success("Checkpoint note updated!");
+    } catch {
+      toast.error("Failed to update checkpoint note");
+    }
+    setEditingCheckpointNote({ taskId: null, idx: null });
+    setCheckpointNoteEditValue("");
+  };
+
+  // Handler to start editing a task note
+  const startEditTaskNote = (taskId, value) => {
+    setEditingTaskNote({ taskId });
+    setTaskNoteEditValue(value || "");
+  };
+
+  // Handler to save edited task note
+  const saveEditTaskNote = async (task) => {
+    try {
+      await goalService.updateTaskNote(goalId, task.id, taskNoteEditValue);
+      await fetchGoalDetails();
+      toast.success("Task note updated!");
+    } catch {
+      toast.error("Failed to update task note");
+    }
+    setEditingTaskNote({ taskId: null });
+    setTaskNoteEditValue("");
+  };
 
   if (loading) {
     return (
@@ -644,6 +773,84 @@ const TaskDetails = () => {
                             <Circle size={24} className="text-gray-400 group-hover:text-indigo-500 transition-colors" />
                           )}
                         </button>
+                      </div>
+                      {/* Checkpoints UI */}
+                      {task.checkpoints && (
+                        <div className="space-y-2 mt-2">
+                          <div className="font-semibold text-sm text-gray-700 dark:text-gray-200 mb-1">Checkpoints:</div>
+                          {task.checkpoints.map((cp, idx) => (
+                            <div key={idx} className="flex items-center gap-2 mb-1">
+                              {/* Reorder arrows */}
+                              <button onClick={() => moveCheckpoint(task, idx, -1)} disabled={idx === 0} className="p-1"><ArrowUp size={16} /></button>
+                              <button onClick={() => moveCheckpoint(task, idx, 1)} disabled={idx === task.checkpoints.length - 1} className="p-1"><ArrowDown size={16} /></button>
+                              {/* Edit checkpoint */}
+                              {editingCheckpoint.taskId === task.id && editingCheckpoint.idx === idx ? (
+                                <input
+                                  value={checkpointEditValue}
+                                  onChange={e => setCheckpointEditValue(e.target.value)}
+                                  onBlur={() => saveEditCheckpoint(task, idx)}
+                                  onKeyDown={e => e.key === 'Enter' && saveEditCheckpoint(task, idx)}
+                                  className="border rounded px-2 py-1 text-sm"
+                                  autoFocus
+                                />
+                              ) : (
+                                <span onClick={() => startEditCheckpoint(task.id, idx, cp)} className="cursor-pointer hover:underline">{cp}</span>
+                              )}
+                              {/* Remove checkpoint */}
+                              <button onClick={() => removeCheckpoint(task, idx)} className="p-1"><Trash2 size={16} /></button>
+                              {/* Edit checkpoint note */}
+                              {editingCheckpointNote.taskId === task.id && editingCheckpointNote.idx === idx ? (
+                                <textarea
+                                  value={checkpointNoteEditValue}
+                                  onChange={e => setCheckpointNoteEditValue(e.target.value)}
+                                  onBlur={() => saveEditCheckpointNote(task, idx)}
+                                  className="border rounded px-2 py-1 text-xs w-40"
+                                  autoFocus
+                                />
+                              ) : (
+                                <button onClick={() => startEditCheckpointNote(task.id, idx, (task.checkpointNotes && task.checkpointNotes[idx]) || "")} className="ml-2 text-xs text-blue-600 underline">{(task.checkpointNotes && task.checkpointNotes[idx]) ? "Edit Note" : "Add Note"}</button>
+                              )}
+                              {task.checkpointNotes && task.checkpointNotes[idx] && editingCheckpointNote.taskId !== task.id && editingCheckpointNote.idx !== idx && (
+                                <span className="ml-1 text-xs text-gray-500">{task.checkpointNotes[idx]}</span>
+                              )}
+                            </div>
+                          ))}
+                          {/* Add checkpoint */}
+                          {addingCheckpoint.taskId === task.id ? (
+                            <div className="flex items-center gap-2 mt-1">
+                              <input
+                                value={addingCheckpoint.value}
+                                onChange={e => setAddingCheckpoint({ taskId: task.id, value: e.target.value })}
+                                onBlur={() => addCheckpoint(task)}
+                                onKeyDown={e => e.key === 'Enter' && addCheckpoint(task)}
+                                className="border rounded px-2 py-1 text-sm"
+                                autoFocus
+                              />
+                              <button onClick={() => addCheckpoint(task)} className="p-1"><Save size={16} /></button>
+                              <button onClick={() => setAddingCheckpoint({ taskId: null, value: "" })} className="p-1"><X size={16} /></button>
+                            </div>
+                          ) : (
+                            <button onClick={() => setAddingCheckpoint({ taskId: task.id, value: "" })} className="text-xs text-green-600 underline mt-1">+ Add Checkpoint</button>
+                          )}
+                        </div>
+                      )}
+                      {/* Task Note UI */}
+                      <div className="mt-3">
+                        <div className="font-semibold text-sm text-gray-700 dark:text-gray-200 mb-1">Task Note:</div>
+                        {editingTaskNote.taskId === task.id ? (
+                          <textarea
+                            value={taskNoteEditValue}
+                            onChange={e => setTaskNoteEditValue(e.target.value)}
+                            onBlur={() => saveEditTaskNote(task)}
+                            className="border rounded px-2 py-1 text-sm w-full"
+                            autoFocus
+                          />
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <span className="text-gray-700 dark:text-gray-200 text-sm">{task.taskNote || <span className="italic text-gray-400">No note yet.</span>}</span>
+                            <button onClick={() => startEditTaskNote(task.id, task.taskNote)} className="text-xs text-blue-600 underline">{task.taskNote ? "Edit Note" : "Add Note"}</button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))

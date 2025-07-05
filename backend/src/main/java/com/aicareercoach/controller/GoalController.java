@@ -170,6 +170,42 @@ public class GoalController {
     return ResponseEntity.ok(updatedTask);
 }
 
+    @PutMapping("/{goalId}/tasks/{taskId}/checkpoints")
+    public ResponseEntity<GoalTaskResponse> updateCheckpoints(
+    @PathVariable String goalId,
+    @PathVariable String taskId,
+    @RequestBody List<String> checkpoints,
+    @RequestHeader("Authorization") String token) {
+    String jwtToken = token.replace("Bearer ", "");
+    String userId = jwtUtil.getUserIdFromToken(jwtToken);
+    GoalTaskResponse updatedTask = goalService.updateCheckpoints(userId, goalId, taskId, checkpoints);
+    return ResponseEntity.ok(updatedTask);
+}
+
+@PutMapping("/{goalId}/tasks/{taskId}/checkpoint-notes")
+public ResponseEntity<GoalTaskResponse> updateCheckpointNotes(
+    @PathVariable String goalId,
+    @PathVariable String taskId,
+    @RequestBody List<String> checkpointNotes,
+    @RequestHeader("Authorization") String token) {
+    String jwtToken = token.replace("Bearer ", "");
+    String userId = jwtUtil.getUserIdFromToken(jwtToken);
+    GoalTaskResponse updatedTask = goalService.updateCheckpointNotes(userId, goalId, taskId, checkpointNotes);
+    return ResponseEntity.ok(updatedTask);
+}
+
+@PutMapping("/{goalId}/tasks/{taskId}/task-note")
+public ResponseEntity<GoalTaskResponse> updateTaskNote(
+    @PathVariable String goalId,
+    @PathVariable String taskId,
+    @RequestBody String taskNote,
+    @RequestHeader("Authorization") String token) {
+    String jwtToken = token.replace("Bearer ", "");
+    String userId = jwtUtil.getUserIdFromToken(jwtToken);
+    GoalTaskResponse updatedTask = goalService.updateTaskNote(userId, goalId, taskId, taskNote);
+    return ResponseEntity.ok(updatedTask);
+}
+
     @GetMapping("/user/name")
     public ResponseEntity<String> getUserName(@RequestHeader("Authorization") String token) {
         String jwtToken = token.replace("Bearer ", "");

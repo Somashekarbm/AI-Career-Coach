@@ -216,6 +216,48 @@ public class GoalService {
         return convertToGoalTaskResponse(savedTask);
     }
 
+    public GoalTaskResponse updateCheckpoints(String userId, String goalId, String taskId, List<String> checkpoints) {
+        Goal goal = goalRepository.findByIdAndUserId(goalId, userId)
+                .orElseThrow(() -> new RuntimeException("Goal not found"));
+        GoalTask task = goalTaskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+        if (!task.getGoal().getId().equals(goalId)) {
+            throw new RuntimeException("Task does not belong to the specified goal");
+        }
+        task.setCheckpoints(checkpoints);
+        task.setUpdatedAt(LocalDateTime.now());
+        GoalTask savedTask = goalTaskRepository.save(task);
+        return convertToGoalTaskResponse(savedTask);
+    }
+
+    public GoalTaskResponse updateCheckpointNotes(String userId, String goalId, String taskId, List<String> checkpointNotes) {
+        Goal goal = goalRepository.findByIdAndUserId(goalId, userId)
+                .orElseThrow(() -> new RuntimeException("Goal not found"));
+        GoalTask task = goalTaskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+        if (!task.getGoal().getId().equals(goalId)) {
+            throw new RuntimeException("Task does not belong to the specified goal");
+        }
+        task.setCheckpointNotes(checkpointNotes);
+        task.setUpdatedAt(LocalDateTime.now());
+        GoalTask savedTask = goalTaskRepository.save(task);
+        return convertToGoalTaskResponse(savedTask);
+    }
+
+    public GoalTaskResponse updateTaskNote(String userId, String goalId, String taskId, String taskNote) {
+        Goal goal = goalRepository.findByIdAndUserId(goalId, userId)
+                .orElseThrow(() -> new RuntimeException("Goal not found"));
+        GoalTask task = goalTaskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+        if (!task.getGoal().getId().equals(goalId)) {
+            throw new RuntimeException("Task does not belong to the specified goal");
+        }
+        task.setTaskNote(taskNote);
+        task.setUpdatedAt(LocalDateTime.now());
+        GoalTask savedTask = goalTaskRepository.save(task);
+        return convertToGoalTaskResponse(savedTask);
+    }
+
     public String getUserName(String userId) {
         if (userId == null) {
             throw new IllegalArgumentException("User ID must not be null. Are you missing a valid Authorization header?");
@@ -285,6 +327,9 @@ public class GoalService {
         response.setCreatedAt(task.getCreatedAt());
         response.setUpdatedAt(task.getUpdatedAt());
         response.setSubtaskStatus(task.getSubtaskStatus());
+        response.setCheckpoints(task.getCheckpoints());
+        response.setCheckpointNotes(task.getCheckpointNotes());
+        response.setTaskNote(task.getTaskNote());
         return response;
     }
 } 

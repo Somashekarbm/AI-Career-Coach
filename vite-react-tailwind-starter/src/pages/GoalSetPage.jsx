@@ -49,6 +49,9 @@ const GoalSetPage = () => {
 
   const navigate = useNavigate();
 
+  // Add state for today's task count
+  const [todaysTaskCount, setTodaysTaskCount] = useState(0);
+
   const categories = [
     { id: "all", name: "All Goals", color: "gray" },
     { id: "career", name: "Career", color: "green" },
@@ -86,6 +89,20 @@ const GoalSetPage = () => {
       setLoading(false);
     }
   };
+
+  // Fetch today's tasks count
+  useEffect(() => {
+    // Calculate today's task count whenever goals change
+    const allTasks = goals.flatMap(goal => goal.tasks || []);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const count = allTasks.filter(task => {
+      const taskDate = new Date(task.dueDate);
+      taskDate.setHours(0, 0, 0, 0);
+      return taskDate.getTime() === today.getTime();
+    }).length;
+    setTodaysTaskCount(count);
+  }, [goals]);
 
   useEffect(() => {
     fetchGoals();
@@ -215,7 +232,7 @@ const GoalSetPage = () => {
 
   return (
     <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 min-h-screen flex flex-col">
-      <GoalSetHeader />
+      <GoalSetHeader todaysTaskCount={todaysTaskCount} />
       
       <main className="flex-1 max-w-7xl mx-auto px-6 py-8 w-full">
         {/* Enhanced Header Section */}
@@ -482,18 +499,12 @@ const GoalSetPage = () => {
                     View Tasks
                   </button>
                   <button
-                    onClick={() => {
-                      if (!isProUser) {
-                        toast.error('Updating goals is only available for Pro/Paid members!');
-                        return;
-                      }
-                      handleUpdate(goal);
-                    }}
-                    className="btn-hover bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-2 rounded-lg"
-                    disabled={!isProUser}
-                  >
-                    <Edit size={16} />
-                  </button>
+  onClick={(e) => { e.stopPropagation(); toast('This feature will be available shortly.'); }}
+  className="bg-gray-300 text-gray-500 px-3 py-2 rounded cursor-not-allowed"
+  disabled
+>
+  <Edit size={16} />
+</button>
                   <button
                     onClick={() => setDeleteGoal(goal)}
                     className="btn-hover bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg"

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Bell, Menu, Users, CheckSquare, Home, Target } from "lucide-react";
 import MenuDropdown from "./MenuDropdown";
 
-const GoalSetHeader = () => {
+const GoalSetHeader = ({ todaysTaskCount = 0 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -47,7 +47,7 @@ const GoalSetHeader = () => {
             <div className="flex items-center gap-2 bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-900/50 dark:to-purple-900/50 px-4 py-2 rounded-lg backdrop-blur-sm">
               <CheckSquare size={16} className="text-indigo-600 dark:text-indigo-400" />
               <span className="text-sm font-medium text-indigo-700 dark:text-indigo-300">
-                5 Tasks Today
+                {todaysTaskCount} Tasks Today
               </span>
             </div>
 
@@ -98,7 +98,7 @@ const GoalSetHeader = () => {
             <div className="flex items-center gap-3 bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-900/50 dark:to-purple-900/50 px-4 py-3 rounded-lg backdrop-blur-sm">
               <CheckSquare size={20} className="text-indigo-600 dark:text-indigo-400" />
               <span className="text-sm font-medium text-indigo-700 dark:text-indigo-300">
-                5 Tasks Today
+                {todaysTaskCount} Tasks Today
               </span>
             </div>
 

@@ -161,5 +161,50 @@ export const goalService = {
       console.error('Error updating subtask status:', error);
       throw error;
     }
+  },
+
+  // Update checkpoints for a task
+  async updateCheckpoints(goalId, taskId, checkpoints) {
+    try {
+      const response = await sessionService.makeAuthenticatedRequest({
+        method: 'PUT',
+        url: `${API_BASE_URL}/goals/${goalId}/tasks/${taskId}/checkpoints`,
+        data: checkpoints,
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error updating checkpoints:', error);
+      throw error;
+    }
+  },
+
+  // Update checkpoint notes for a task
+  async updateCheckpointNotes(goalId, taskId, checkpointNotes) {
+    try {
+      const response = await sessionService.makeAuthenticatedRequest({
+        method: 'PUT',
+        url: `${API_BASE_URL}/goals/${goalId}/tasks/${taskId}/checkpoint-notes`,
+        data: checkpointNotes,
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error updating checkpoint notes:', error);
+      throw error;
+    }
+  },
+
+  // Update task note
+  async updateTaskNote(goalId, taskId, taskNote) {
+    try {
+      const response = await sessionService.makeAuthenticatedRequest({
+        method: 'PUT',
+        url: `${API_BASE_URL}/goals/${goalId}/tasks/${taskId}/task-note`,
+        data: taskNote,
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error updating task note:', error);
+      throw error;
+    }
   }
 }; 

@@ -31,6 +31,10 @@ public class GoalTask {
 
     private List<Boolean> subtaskStatus;
 
+    private List<String> checkpoints;
+    private List<String> checkpointNotes;
+    private String taskNote;
+
     // Getters and setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
@@ -64,4 +68,11 @@ public class GoalTask {
 
     public List<Boolean> getSubtaskStatus() { return subtaskStatus; }
     public void setSubtaskStatus(List<Boolean> subtaskStatus) { this.subtaskStatus = subtaskStatus; }
+
+    public List<String> getCheckpoints() { return checkpoints; }
+    public void setCheckpoints(List<String> checkpoints) { this.checkpoints = checkpoints; }
+    public List<String> getCheckpointNotes() { return checkpointNotes; }
+    public void setCheckpointNotes(List<String> checkpointNotes) { this.checkpointNotes = checkpointNotes; }
+    public String getTaskNote() { return taskNote; }
+    public void setTaskNote(String taskNote) { this.taskNote = taskNote; }
 } 
