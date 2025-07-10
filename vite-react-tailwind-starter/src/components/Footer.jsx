@@ -41,12 +41,12 @@ const Footer = () => {
 
   return (
     <>
-      <footer className="bg-white dark:bg-[#121212] border-t border-gray-200 dark:border-gray-700 py-2 sm:py-8 sm:px-6 lg:px-8">
+      <footer className="bg-white dark:bg-[#121212] border-t border-gray-200 dark:border-gray-700 py-2 px-2 sm:py-3 sm:px-4 lg:px-6">
         <div className="max-w-6xl mx-auto text-center">
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-            &copy; {new Date().getFullYear()} AI Career Coach. All rights reserved.
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            &copy; {new Date().getFullYear()} GoalForge AI. All rights reserved.
           </p>
-          <div className="mt-2 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 text-xs sm:text-sm text-gray-400 dark:text-gray-500">
+          <div className="mt-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-4 text-xs text-gray-400 dark:text-gray-500">
             <button 
               onClick={() => openModal('about')}
               className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
